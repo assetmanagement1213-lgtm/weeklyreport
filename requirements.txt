@@ -6,3 +6,4 @@ google-auth
 matplotlib
 streamlit-navbar
 streamlit_navigation_bar
+streamlit_option_menu
