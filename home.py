@@ -33,9 +33,9 @@ def login_page():
         background-color : black;
         color : white;
     }
-    .st-emotion-cache-2dxdgx {
+    .st-emotion-cache-y7k0q2 {
         color: black;}
-    .st-emotion-cache-y5ykoy{
+    .st-emotion-cache-1o7eotc{
         color:white;}
     </style>
     """, unsafe_allow_html=True)
