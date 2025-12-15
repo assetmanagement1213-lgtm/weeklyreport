@@ -94,6 +94,8 @@ def app():
                 background-color : white; box-shadow: 0 3px 8px rgba(0,0,0,0.08);}
             .st-emotion-cache-1o7eotc {
                 background-color : white; box-shadow: 0 3px 8px rgba(0,0,0,0.08);}
+            .st-emotion-cache-12yo0lz {
+                background-color : white;}
             </style>
             """, unsafe_allow_html=True)
     with x1:
@@ -260,6 +262,7 @@ def app():
                     with col:
 
                         st.error(f"Error load: {e}")
+
 
 
 
