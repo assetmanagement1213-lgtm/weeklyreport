@@ -4,4 +4,4 @@ gspread
 oauth2client
 google-auth
 matplotlib
-st_navbar
+streamlit-navbar
