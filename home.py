@@ -35,7 +35,7 @@ def login_page():
     }
     .st-emotion-cache-y7k0q2 {
         color: black;}
-    .st-emotion-cache-1o7eotc {
+    .st-emotion-cache-5t2yyb {
         color:white;}
     </style>
     """, unsafe_allow_html=True)
