@@ -130,7 +130,6 @@ def app():
             
         """, unsafe_allow_html=True)
     
-    )
     st.divider()
     col1, col2 = st.columns([5,3])
     with col1 :
@@ -253,6 +252,7 @@ def app():
                     with col:
 
                         st.error(f"Error load: {e}")
+
 
 
 
