@@ -156,15 +156,7 @@ def app():
         # --- Urutkan pivot ---
         pivot = pivot.sort_values("Total", ascending=False, ignore_index=True)
         pivot.index = pivot.index + 1
-        st.markdown(
-            """
-            <style>
-            table { background-color: #f0f0f0; }
-            </style>
-            """,
-            unsafe_allow_html=True
-        )
-        st.dataframe(pivot.style.set_properties({'background-color': 'white'}), height=350, key="stDataFrame")
+        st.dataframe(pivot.style.set_properties({'background-color': 'white'}), height=350)
     with col2:
         possible_bus = ["DCM", "HPAL", "ONC", "Lainnya"]
 
@@ -252,6 +244,7 @@ def app():
                     with col:
 
                         st.error(f"Error load: {e}")
+
 
 
 
