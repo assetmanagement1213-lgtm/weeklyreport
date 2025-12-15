@@ -202,13 +202,13 @@ with tab1:
             margin-top: 0px;
             color: white;
         }
-        .st-emotion-cache-codo9b{
+        .st-emotion-cache-1n2ou7v {
             background-color: white;
             box-shadow: 0 3px 8px rgba(0,0,0,0.08);
             text-align: center;
             diplay: inline-block;
         }
-        .st-emotion-cache-1o7eotc{
+        .st-emotion-cache-l64bj3 {
             background-color: white;
             box-shadow: 0 3px 8px rgba(0,0,0,0.08);
         }
