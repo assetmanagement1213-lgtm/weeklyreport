@@ -64,7 +64,6 @@ def app():
     x1, x2, x3, x4,x5 = st.columns(5)
     st.markdown("""
             <style>
-
             .metric-card {
                 background: black;
                 padding : 10px;
@@ -73,7 +72,6 @@ def app():
                 box-shadow: 0 3px 8px rgba(0,0,0,0.08);
                 text-align: left;
             }
-
             .metric-card h4 {
                 margin: 0;
                 margin-left : 20px;
@@ -83,7 +81,6 @@ def app():
                 font-weight: 600;
                 color: white;
             }
-
             .metric-card .value {
                 margin-top : -100px;
                 margin-left : 20px;
@@ -245,3 +242,4 @@ def app():
                     with col:
 
                         st.error(f"Error load: {e}")
+
