@@ -127,7 +127,25 @@ def app():
             </div>
             
         """, unsafe_allow_html=True)
-
+    st.markdown(
+        """
+        <style>
+        div[data-testid="stDataFrame"] {
+            background-color: white;
+        }
+        div[data-testid="stDataFrame"] table {
+            background-color: white;
+        }
+        div[data-testid="stDataFrame"] thead th {
+            background-color: white;
+        }
+        div[data-testid="stDataFrame"] tbody td {
+            background-color: white;
+        }
+        </style>
+        """,
+        unsafe_allow_html=True
+    )
     st.divider()
     col1, col2 = st.columns([5,3])
     with col1 :
@@ -242,4 +260,5 @@ def app():
                     with col:
 
                         st.error(f"Error load: {e}")
+
 
