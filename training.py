@@ -129,7 +129,28 @@ def app():
             </div>
             
         """, unsafe_allow_html=True)
-    
+    def white_df(df, height=350):
+        st.markdown(
+            """
+            <style>
+            div[data-testid="stDataFrame"] {
+                background-color: white;
+            }
+            div[data-testid="stDataFrame"] table {
+                background-color: white;
+            }
+            div[data-testid="stDataFrame"] thead th {
+                background-color: white;
+            }
+            div[data-testid="stDataFrame"] tbody td {
+                background-color: white;
+            }
+            </style>
+            """,
+            unsafe_allow_html=True
+        )
+        st.dataframe(df, height=height)
+
     st.divider()
     col1, col2 = st.columns([5,3])
     with col1 :
@@ -156,7 +177,8 @@ def app():
         # --- Urutkan pivot ---
         pivot = pivot.sort_values("Total", ascending=False, ignore_index=True)
         pivot.index = pivot.index + 1
-        st.dataframe(pivot.style.set_properties({'background-color': 'white'}), height=350)
+        white_df(pivot, height=350)
+
     with col2:
         possible_bus = ["DCM", "HPAL", "ONC", "Lainnya"]
 
@@ -244,6 +266,7 @@ def app():
                     with col:
 
                         st.error(f"Error load: {e}")
+
 
 
 
