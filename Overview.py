@@ -138,7 +138,7 @@ with st.sidebar:
         options=[
             "Overview","Induksi","Training","Complience Rate",
             "Com/Re-com","Inspeksi & Observasi",
-            "SIMPER","Tes Praktik","Refresh","Briefing P5M"
+            "SIMPER","Tes Praktik","Refresh","Briefing P5M","Lainnya"
         ],
         icons=[
         "speedometer2",      # Overview
@@ -150,7 +150,8 @@ with st.sidebar:
         "credit-card",       # SIMPER
         "check2-square",     # Tes Praktik
         "arrow-clockwise",   # Refresh
-        "megaphone"          # Briefing P5M
+        "megaphone",         # Briefing P5M
+        "three-dots"
         ],
         styles={
             "icon": {
@@ -189,6 +190,7 @@ import SIMPER
 import TrainingA2B
 import Refresh
 import P5M
+import Lainnya
 
 # PAGES = {
 #     "Overview": None,
@@ -595,5 +597,8 @@ elif selected == "Refresh":
 
 elif selected == "Briefing P5M":
     P5M.app()
+
+elif selected == "Lainnya":
+    Lainnya.app()
 
 
