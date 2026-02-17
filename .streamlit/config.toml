@@ -2,10 +2,7 @@
 enableXsrfProtection = false
 
 [theme]
-font = "Nunito:https://fonts.googleapis.com/css2?family=Nunito&display=swap"
+font = "Poppins:https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap"
 codeFont = "'Space Mono':https://fonts.googleapis.com/css2?family=Space+Mono&display=swap"
 primaryColor = "black"
-backgroundColor = "#f9f9f9"
-
-
-
+backgroundColor = "#F9F9F9F9"
