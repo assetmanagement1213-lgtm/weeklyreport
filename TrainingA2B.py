@@ -291,7 +291,7 @@ def app():
                 """,
                 unsafe_allow_html=True
             )
-            pivot2026 = filtered_training2026.pivot_table(
+            pivot2026 = df_training.pivot_table(
                 index="Departement",
                 columns="BU",
                 values="Nama",
@@ -304,7 +304,7 @@ def app():
             sizes  = list(bu_totals2026.values())
             total_all = sum(sizes)
             bu_counts2026 = (
-                filtered_training2026["BU"]
+                df_training["BU"]
                 .value_counts()
                 .reindex(possible_bus, fill_value=0)
                 .reset_index()
@@ -326,7 +326,7 @@ def app():
                 textfont_size=14
             )
             fig2.update_layout(
-                 showlegend=False,
+                showlegend=False,
                 plot_bgcolor="white",
                 paper_bgcolor="white",
                 height=420,
@@ -418,5 +418,6 @@ def app():
                 except Exception as e:
                     with col:
                         st.error(f"Error load: {e}")
+
 
 
