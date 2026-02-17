@@ -5,12 +5,6 @@ oauth2client
 google-auth
 matplotlib
 streamlit-navbar
-streamlit_navigation_bar
-streamlit_option_menu
-datetime
-streamlit.components.v1
-google.oauth2
+streamlit-option-menu
 requests
-plotly.express
-matplotlib.pyplot
-plotly_express
+plotly
