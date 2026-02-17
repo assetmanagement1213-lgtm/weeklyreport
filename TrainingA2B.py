@@ -299,9 +299,9 @@ def app():
                 fill_value=0
             ).reset_index()
             possible_bus = ["DCM", "HPAL", "ONC", "Lainnya"]
-            available_bus = [bu for bu in possible_bus if bu in filtered_training2026.columns]
-            bu_totals = {bu: pivot2026[bu].sum() for bu in available_bus}
-            sizes  = list(bu_totals.values())
+            available_bus2026 = [bu for bu in possible_bus if bu in pivot2026.columns]
+            bu_totals2026 = {bu: pivot2026[bu].sum() for bu in available_bus2026}
+            sizes  = list(bu_totals2026.values())
             total_all = sum(sizes)
             bu_counts2026 = (
                 filtered_training2026["BU"]
@@ -418,4 +418,5 @@ def app():
                 except Exception as e:
                     with col:
                         st.error(f"Error load: {e}")
+
 
