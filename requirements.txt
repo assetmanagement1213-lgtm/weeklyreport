@@ -8,3 +8,4 @@ streamlit-navbar
 streamlit-option-menu
 requests
 plotly
+streamlit_navigation_bar
