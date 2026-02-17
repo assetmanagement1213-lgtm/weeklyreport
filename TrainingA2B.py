@@ -300,6 +300,9 @@ def app():
             ).reset_index()
             possible_bus = ["DCM", "HPAL", "ONC", "Lainnya"]
             available_bus = [bu for bu in possible_bus if bu in filtered_training2026.columns]
+            bu_totals = {bu: pivot2026[bu].sum() for bu in available_bus}
+            sizes  = list(bu_totals.values())
+            total_all = sum(sizes)
             bu_counts2026 = (
                 filtered_training2026["BU"]
                 .value_counts()
