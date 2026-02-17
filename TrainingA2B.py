@@ -307,35 +307,39 @@ def app():
                 .reset_index()
             )
             bu_counts2026.columns = ["BU", "Total"]
-            fig2 = px.bar(
+            fig2 = px.pie(
                 bu_counts2026,
-                x="BU",
-                y="Total",
-                text=bu_counts2026["Total"],
+                names="BU",
+                values="Total",
                 color="BU",
                 color_discrete_map={
                     "DCM": "#134f5c",
                     "HPAL": "#2f9a7f",
-                    "ONC": "#31681a",
-                    "Lainnya":"#ff9900"
+                    "ONC": "#31681a"
                 },
-                template="seaborn"
-            )
+                hole=0.4)
             fig2.update_traces(
-                textposition="outside",
+                textinfo="label+value",
                 textfont_size=14
             )
             fig2.update_layout(
-                xaxis_title="Business Unit",
-                yaxis_title="Jumlah",
-                showlegend=False,
-                bargap=0.3,
+                 showlegend=False,
                 plot_bgcolor="white",
                 paper_bgcolor="white",
-                height=550
+                height=420,
+                margin=dict(t=20, b=20, l=20, r=20),
+                annotations=[
+                    dict(
+                        text=f"<b>{total_all}</b>",
+                        x=0.5,
+                        y=0.5,
+                        font=dict(size=26, color="black"),
+                        showarrow=False
+                    )
+                ]
             )
 
-            st.plotly_chart(fig2, use_container_width=True)
+            st.plotly_chart(fig2, use_container_width=True, key="pie2026")
 
             with st.expander("Data Training 2026"):
 
