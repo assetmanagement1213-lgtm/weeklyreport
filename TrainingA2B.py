@@ -248,7 +248,7 @@ def app():
                 bargap=0.3,
                 plot_bgcolor="white",
                 paper_bgcolor="white",
-                height=550
+                height=420
             )
 
             st.plotly_chart(fig1, use_container_width=True)
@@ -418,3 +418,4 @@ def app():
                 except Exception as e:
                     with col:
                         st.error(f"Error load: {e}")
+
