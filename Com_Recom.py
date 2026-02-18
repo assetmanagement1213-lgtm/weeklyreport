@@ -21,7 +21,7 @@ def app():
                 }   
             </style>
             <div class="header-subactivity">
-                <h1>Induksi</h1>
+                <h1>Commissioning/Recommissioning</h1>
             </div>""",unsafe_allow_html=True)
     SCOPES = [
         "https://www.googleapis.com/auth/spreadsheets",
@@ -635,4 +635,5 @@ def app():
 
                 except Exception as e:
                     with col:
+
                         st.error(f"Error load: {e}")
