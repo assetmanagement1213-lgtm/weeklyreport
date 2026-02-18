@@ -38,19 +38,20 @@ def app():
     spreadsheet_name = "COMMISSIONING & RECOMMISSIONING ALL BU 2026"
     sheet = client.open(spreadsheet_name)
 
-    # === ambil sheet dokumentasi ===
     nameSheetDok = "DOKUMENTASI"
     sheet_dok = client.open(nameSheetDok)
     ws_recom = sheet.worksheet("2026")
     values_recom = ws_recom.get("E:V")
     df_recom = pd.DataFrame(values_recom[1:], columns=values_recom[0])
 
-    # === ambil sheet dokumentasi ===
+    ws_temuan=sheet.worksheet("Olah Temuan")
+    values_temuan=ws_temuan.get("A:H")
+    df_temuan = pd.DataFrame(values_temuan[1:],columns=values_temuan[0])
+
     ws_dok = sheet_dok.worksheet("Dokumentasi")
     values_dok = ws_dok.get("D:L")
     dokumentasi = pd.DataFrame(values_dok[1:], columns=values_dok[0])
 
-    # ================= WEEK FILTER ==================
     weeks = sorted(df_recom["Week"].dropna().unique())
 
     week1_start = date(2026, 1, 2)
@@ -582,6 +583,49 @@ def app():
                 pivot_bl_2026.index = pivot_bl_2026.index + 1
                 st.dataframe(pivot_bl_2026, height=400)
 
+    #temuan
+    with st.container(border=True):
+        st.markdown(
+        f"""
+        <style>
+            .subhead-grafik h2 {{
+                margin: 0;
+                font-size: 30px;
+                font-weight: 600;
+                color: black;
+                text-align: center;
+            }}
+        </style>
+        <div class="subhead-grafik">
+            <h2>TOP 10 Temuan Commissioning & Recommissioning</h2>
+        </div>
+        """,
+        unsafe_allow_html=True
+        )
+        top_temuan = (
+                df_temuan
+                .groupby("Klasifikasi Temuan", as_index=False)
+                .size()
+                .rename(columns={"size": "Jumlah"})
+                .sort_values("Jumlah", ascending=False)
+                .head(10)  
+            )
+        fig_temuan= px.bar(
+                top_temuan,
+                x="Jumlah",
+                y="Klasifikasi Temuan",
+                orientation="h",
+                text="Jumlah",
+            )
+
+        fig_temuan.update_traces(textposition="outside")
+        fig_temuan.update_layout(
+            yaxis=dict(autorange="reversed"),
+            plot_bgcolor="white",
+            paper_bgcolor="white",
+        )
+
+        st.plotly_chart(fig_temuan, use_container_width=True,key="bar_temuan")
 
     st.markdown("""
         <style>
