@@ -625,7 +625,7 @@ def app():
             paper_bgcolor="white",
         )
 
-        st.plotly_chart(fig_temuan, use_container_width=True,key="bar_temuan")
+        st.plotly_chart(fig_temuan, use_container_width=True,key="bar_temuan_2026")
 
     st.markdown("""
         <style>
@@ -681,3 +681,4 @@ def app():
                     with col:
 
                         st.error(f"Error load: {e}")
+
