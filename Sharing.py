@@ -163,7 +163,7 @@ def app():
             
         """, unsafe_allow_html=True)
     total_jpl = pd.to_numeric(
-        filtered_training["Jam Pelaksanaan"],
+        filtered_training["Jam Pelatihan"],
         errors="coerce"
     ).sum()
 
@@ -411,4 +411,5 @@ def app():
 
                 except Exception as e:
                     with col:
+
                         st.error(f"Error load: {e}")
