@@ -392,7 +392,7 @@ def app():
                 <h1>📸 Dokumentasi Kegiatan</h1>
             </div>""",unsafe_allow_html=True)
     import requests
-    import streamlit as st
+    import base64
 
     cols_per_row = 3
     rows = induksi_dokumentasi.to_dict("records")
@@ -429,3 +429,4 @@ def app():
                     with col:
 
                         st.error(f"Error load: {e}")
+
