@@ -115,6 +115,35 @@ def app():
     st.divider()
     st.markdown("""
         <style>
+        .square-img {
+            width: 100%;
+            aspect-ratio: 1 / 1;
+            overflow: hidden;
+            border-radius: 14px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+
+        .square-img img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: 0.3s ease-in-out;
+        }
+
+        .square-img img:hover {
+            transform: scale(1.05);
+        }
+
+        .img-caption {
+            text-align: center;
+            font-size: 14px;
+            margin-top: 6px;
+            color: #444;
+        }
+        </style>
+        """, unsafe_allow_html=True)
+    st.markdown("""
+        <style>
         .white-box {
             background-color: white;
             padding: 20px 24px;
@@ -848,6 +877,9 @@ def app():
     import requests
     import streamlit as st
 
+    import base64
+    import requests
+
     cols_per_row = 3
     rows = refresh_dokumentasi.to_dict("records")
 
@@ -860,21 +892,25 @@ def app():
             if url:
                 try:
                     response = requests.get(url, stream=True)
-
                     content_type = response.headers.get("Content-Type", "")
 
                     with col:
-                        # Jika benar-benar image
                         if "image" in content_type:
-                            st.image(
-                                response.content,
-                                caption=row.get("Keterangan", "")
-                            )
+                            img_base64 = base64.b64encode(response.content).decode()
+
+                            st.markdown(f"""
+                            <div class="square-img">
+                                <img src="data:image/jpeg;base64,{img_base64}">
+                            </div>
+                            <div class="img-caption">
+                                {row.get("Keterangan","")}
+                            </div>
+                            """, unsafe_allow_html=True)
+
                         else:
-                            st.warning("Link tidak mengembalikan file gambar.")
-                            st.write(row["url_clean"])
+                            st.warning("Link bukan file gambar.")
+                            st.write(url)
 
                 except Exception as e:
                     with col:
                         st.error(f"Error load: {e}")
-
