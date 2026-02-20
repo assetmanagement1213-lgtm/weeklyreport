@@ -710,7 +710,7 @@ def app():
 
             st.plotly_chart(fig_nilai, use_container_width=True, key="bar_nilai")
     st.divider()
-     st.markdown("""
+    st.markdown("""
         <style>
         .square-img {
             width: 100%;
@@ -789,3 +789,4 @@ def app():
                     with col:
 
                         st.error(f"Error load: {e}")
+
