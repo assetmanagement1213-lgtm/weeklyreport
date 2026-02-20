@@ -88,27 +88,51 @@ def app():
     st.divider()
     st.markdown("""
         <style>
-        .white-box {
-            background-color: white;
-            padding: 20px 24px;
-            border-radius: 16px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.06);
-            margin-bottom: 24px;
+        .square-img {
+            width: 100%;
+            aspect-ratio: 1 / 1;
+            overflow: hidden;
+            border-radius: 14px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
         }
-        [class="stVerticalBlock st-emotion-cache-1ne20ew e12zf7d53"] {
-            background-color: white;
-            box-shadow: 0 3px 8px rgba(0,0,0,0.08);
+
+        .square-img img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: 0.3s ease-in-out;
+        }
+
+        .square-img img:hover {
+            transform: scale(1.05);
+        }
+
+        .img-caption {
             text-align: center;
-            diplay: inline-block;
+            font-size: 14px;
+            margin-top: 6px;
+            color: #444;
         }
         </style>
         """, unsafe_allow_html=True)
+    st.markdown("""
+            <style>
+                .header-subactivity h1 {
+                    margin: 0;
+                    font-size: 45px;
+                    font-weight: 700;
+                    color: #1f2937;
+                }   
+            </style>
+            <div class="header-subactivity">
+                <h1>📸 Dokumentasi Kegiatan</h1>
+            </div>""",unsafe_allow_html=True)
+    import requests
+    import base64
     
     if recom_dokumentasi.empty:
         st.info(f"Tidak ada data yang dapat ditampilkan.")
         st.stop()
-    
-    import requests
 
     cols_per_row = 3
     rows = recom_dokumentasi.to_dict("records")
@@ -132,7 +156,15 @@ def app():
                     materi = row.get("Keterangan", "")
 
                     if "image" in content_type:
-                        st.image(response.content, use_container_width=True)
+                        img_base64 = base64.b64encode(response.content).decode()
+                        st.markdown(f"""
+                        <div class="square-img">
+                            <img src="data:image/jpeg;base64,{img_base64}">
+                        </div>
+                        <div class="img-caption">
+                            {row.get("Keterangan","")}
+                        </div>
+                        """, unsafe_allow_html=True)
 
                         caption_text = f"**{lokasi}**\n\n{materi}"
 
@@ -143,4 +175,5 @@ def app():
                         st.write(url)
 
                 except Exception as e:
+
                     st.error(f"Gagal load gambar: {e}")
