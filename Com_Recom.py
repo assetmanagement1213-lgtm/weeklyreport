@@ -59,7 +59,7 @@ def app():
     days_since = (today - week1_start).days
     current_week = (days_since // 7) + 1
     default_week = f"Week {current_week}"
-
+    default_week = [default_week] if default_week in weeks else []
     with w:
         week_filter = st.multiselect(
             "Pilih Week",
@@ -714,3 +714,4 @@ def app():
                 except Exception as e:
                     with col:
                         st.error(f"Error load: {e}")
+
