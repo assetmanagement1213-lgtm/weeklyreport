@@ -789,4 +789,3 @@ def app():
                     with col:
 
                         st.error(f"Error load: {e}")
-
