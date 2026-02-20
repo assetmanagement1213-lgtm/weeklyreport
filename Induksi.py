@@ -410,8 +410,8 @@ def app():
                     content_type = response.headers.get("Content-Type", "")
 
                     with col:
-                        # Jika benar-benar image
                         if "image" in content_type:
+                            img_base64 = base64.b64encode(response.content).decode()
                             st.markdown(f"""
                             <div class="square-img">
                                 <img src="data:image/jpeg;base64,{img_base64}">
@@ -429,4 +429,5 @@ def app():
                     with col:
 
                         st.error(f"Error load: {e}")
+
 
