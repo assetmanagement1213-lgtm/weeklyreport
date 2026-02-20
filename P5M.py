@@ -155,7 +155,7 @@ def app():
                     content_type = response.headers.get("Content-Type", "")
 
                     lokasi = row.get("Lokasi", "")
-                    materi = row.get("Keterangan", "")
+                    materi = row.get("Materi", "")
 
                     if "image" in content_type:
                         img_base64 = base64.b64encode(response.content).decode()
@@ -176,3 +176,4 @@ def app():
                 except Exception as e:
 
                     st.error(f"Gagal load gambar: {e}")
+
