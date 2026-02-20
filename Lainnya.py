@@ -161,9 +161,6 @@ def app():
                         <div class="square-img">
                             <img src="data:image/jpeg;base64,{img_base64}">
                         </div>
-                        <div class="img-caption">
-                            {row.get("Keterangan","")}
-                        </div>
                         """, unsafe_allow_html=True)
 
                         caption_text = f"**{lokasi}**\n\n{materi}"
@@ -177,3 +174,4 @@ def app():
                 except Exception as e:
 
                     st.error(f"Gagal load gambar: {e}")
+
