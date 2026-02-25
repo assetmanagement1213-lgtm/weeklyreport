@@ -482,7 +482,7 @@ if selected == "Overview":
         alt.Chart(sum_kegiatan)
         .mark_bar()
         .encode(
-            y=alt.Y("Kegiatan:N", sort="-x", axis=alt.Axis(title=None, labelFontSize = 12)),
+            y=alt.Y("Kegiatan:N", sort="-x", axis=alt.Axis(title=None, labelFontSize = 14)),
             x=alt.X("Jumlah:Q", axis=alt.Axis(title=None, labels=False)),
             color=alt.Color(
                 "BU:N",
