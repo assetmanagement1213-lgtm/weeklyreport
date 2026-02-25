@@ -482,7 +482,7 @@ if selected == "Overview":
         alt.Chart(sum_kegiatan)
         .mark_bar()
         .encode(
-            y=alt.Y("Kegiatan:N", sort="-x", axis=alt.Axis(title=None)),
+            y=alt.Y("Kegiatan:N", sort="-x", axis=alt.Axis(title=None, labelFontSize = 12)),
             x=alt.X("Jumlah:Q", axis=alt.Axis(title=None, labels=False)),
             color=alt.Color(
                 "BU:N",
@@ -490,9 +490,10 @@ if selected == "Overview":
                     domain=["DCM", "HPAL", "ONC", "Lainnya"],
                     range=["#134f5c", "#2f9a7f", "#31681a", "#ff9900"]
                 )
-            )
+            ),
+            .configure_axis(label FontSize =12)
         )
-    )
+    
 
     labels = (
         alt.Chart(total_kegiatan)
