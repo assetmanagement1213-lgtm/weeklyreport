@@ -482,7 +482,7 @@ if selected == "Overview":
         alt.Chart(sum_kegiatan)
         .mark_bar()
         .encode(
-            y=alt.Y("Kegiatan:N", sort="-x", axis=alt.Axis(title=None, labelFontSize = 14, labelLimit=50)),
+            y=alt.Y("Kegiatan:N", sort="-x", axis=alt.Axis(title=None, labelFontSize = 14, labelLimit=200)),
             x=alt.X("Jumlah:Q", axis=alt.Axis(title=None, labels=False)),
             color=alt.Color(
                 "BU:N",
@@ -506,7 +506,7 @@ if selected == "Overview":
     final_chart = (
         (chart + labels)
         .properties(height=400,
-                   padding={"left": 120, "right": 20, "top": 10, "bottom": 10})
+                   padding={"left": 60, "right": 20, "top": 10, "bottom": 10})
         .configure_view(
             fill="white"          # area plot
         )
