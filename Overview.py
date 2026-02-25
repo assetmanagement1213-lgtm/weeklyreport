@@ -490,8 +490,8 @@ if selected == "Overview":
                     domain=["DCM", "HPAL", "ONC", "Lainnya"],
                     range=["#134f5c", "#2f9a7f", "#31681a", "#ff9900"]
                 )
-            ),
-            .configure_axis(label FontSize =12)))
+            ))
+        .configure_axis(label FontSize =12))
     
 
     labels = (
