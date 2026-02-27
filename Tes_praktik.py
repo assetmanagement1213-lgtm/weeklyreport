@@ -59,7 +59,7 @@ def app():
     week1_start = date(2026, 1, 2)
     today = date.today()
     days_since = (today - week1_start).days
-    current_week = (days_since // 7) + 1
+    current_week = (days_since // 7)
     default_week = f"Week {current_week}"
     default_week = [default_week] if default_week in weeks else []
 
@@ -804,5 +804,6 @@ def app():
                 except Exception as e:
                     with col:
                         st.error(f"Error load: {e}")
+
 
 
