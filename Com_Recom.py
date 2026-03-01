@@ -474,21 +474,15 @@ def app():
             st.plotly_chart(fig3, use_container_width=True, key="bar-belum_lulus")
 
             with st.expander("Data Com/Re-Com Weekly"):
-
-
-                # --- Kolom BU yang mungkin ---
                 possible_bu_bl = ["DCM", "HPAL", "ONC"]
 
-                # --- Kolom BU yang benar-benar ada di pivot ---
                 available_bu_bl = [bu for bu in possible_bu_bl if bu in pivot_bl.columns]
 
-                # --- Jika tidak ada sama sekali, buat kolom Total = 0 ---
                 if len(available_bu_bl) == 0:
                     pivot_bl["Total"] = 0
                 else:
                     pivot_bl["Total"] = pivot_bl[available_bu_bl].sum(axis=1)
 
-                # --- Urutkan pivot ---
                 pivot_bl = pivot_bl.sort_values("Total", ascending=False, ignore_index=True)
                 pivot_bl.index = pivot_bl.index + 1
                 st.dataframe(pivot_bl, height=400)
@@ -566,19 +560,15 @@ def app():
             with st.expander("Data Com/Re-Com 2026"):
 
 
-                # --- Kolom BU yang mungkin ---
                 possible_bu_bl_2026 = ["DCM", "HPAL", "ONC"]
 
-                # --- Kolom BU yang benar-benar ada di pivot ---
                 available_bu_lulus_2026 = [bu for bu in possible_bu_bl_2026 if bu in pivot_bl_2026.columns]
 
-                # --- Jika tidak ada sama sekali, buat kolom Total = 0 ---
                 if len(available_bu_bl_2026) == 0:
                     pivot_bl_2026["Total"] = 0
                 else:
                     pivot_bl_2026["Total"] = pivot_bl_2026[available_bu_bl_2026].sum(axis=1)
 
-                # --- Urutkan pivot ---
                 pivot_bl_2026 = pivot_bl_2026.sort_values("Total", ascending=False, ignore_index=True)
                 pivot_bl_2026.index = pivot_bl_2026.index + 1
                 st.dataframe(pivot_bl_2026, height=400)
@@ -627,6 +617,10 @@ def app():
                     size=16
                 )
             ),
+            font=dict(
+                color="black", 
+                size=14
+            )
             plot_bgcolor="white",
             paper_bgcolor="white",
         )
@@ -721,6 +715,7 @@ def app():
                 except Exception as e:
                     with col:
                         st.error(f"Error load: {e}")
+
 
 
 
