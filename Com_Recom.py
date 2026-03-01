@@ -614,7 +614,12 @@ def app():
             plot_bgcolor="white",
             paper_bgcolor="white"
         )
-
+        fig_temuan.update_yaxes(
+            tickfont=dict(
+                size=16,
+                color="black"
+            )
+        )
 
         st.plotly_chart(fig_temuan, use_container_width=True,key="bar_temuan")
 
@@ -705,6 +710,7 @@ def app():
                 except Exception as e:
                     with col:
                         st.error(f"Error load: {e}")
+
 
 
 
