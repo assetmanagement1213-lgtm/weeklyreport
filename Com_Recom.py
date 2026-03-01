@@ -620,10 +620,17 @@ def app():
 
         fig_temuan.update_traces(textposition="outside")
         fig_temuan.update_layout(
-            yaxis=dict(autorange="reversed"),
+            yaxis=dict(
+                autorange="reversed",
+                tickfont=dict(
+                    color="black",
+                    size=16
+                )
+            ),
             plot_bgcolor="white",
             paper_bgcolor="white",
         )
+
 
         st.plotly_chart(fig_temuan, use_container_width=True,key="bar_temuan")
 
@@ -714,5 +721,6 @@ def app():
                 except Exception as e:
                     with col:
                         st.error(f"Error load: {e}")
+
 
 
