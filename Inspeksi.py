@@ -438,7 +438,7 @@ def app():
                 plot_bgcolor="white",
                 paper_bgcolor="white"
             )
-             fig_temuan.update_yaxes(
+            fig_temuan.update_yaxes(
             tickfont=dict(
                 size=16,
                 color="black"
@@ -801,5 +801,6 @@ def app():
                     with col:
 
                         st.error(f"Error load: {e}")
+
 
 
