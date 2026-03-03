@@ -611,6 +611,10 @@ def app():
         fig_temuan.update_traces(textposition="outside")
         fig_temuan.update_layout(
             yaxis=dict(autorange="reversed"),
+            font=dict(
+                color="black",
+                size=14
+            ),
             plot_bgcolor="white",
             paper_bgcolor="white"
         )
@@ -710,6 +714,7 @@ def app():
                 except Exception as e:
                     with col:
                         st.error(f"Error load: {e}")
+
 
 
 
