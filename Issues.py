@@ -171,8 +171,10 @@ def app():
         }
         </style>
         """, unsafe_allow_html=True)
+    from datetime import datetime
+    import pandas as pd
     cols = st.columns(3)
-    for idx, row in enumerate(filtered_df.itertuples()):
+    for idx, row in filtered_df.iterrows():
 
         col = cols[idx % 3]
 
@@ -182,6 +184,13 @@ def app():
                 st.markdown(f"### 🚧 {row.Issue}")
                 st.write("**Action:**", row.Solusi)
 
+                due_value = row["Due Date"]
+
+                if pd.notna(due_value) and due_value != "":
+                    due_value = pd.to_datetime(due_value).date()
+                else:
+                    due_value = None
+
                 pic_input = st.text_input(
                     "**PIC**",
                     value=row.PIC if row.PIC else "",
@@ -190,7 +199,7 @@ def app():
 
                 due_date_input = st.date_input(
                     "**Due Date**",
-                    value=row._asdict().get("Due_Date", None),
+                    value=due_value,
                     key=f"due_{idx}"
                 )
 
