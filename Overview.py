@@ -138,7 +138,7 @@ with st.sidebar:
         options=[
             "Overview","Induksi","Training","Complience Rate",
             "Com/Re-com","Inspeksi & Observasi",
-            "SIMPER","Tes Praktik","Refresh","Briefing P5M","Lainnya"
+            "SIMPER","Tes Praktik","Refresh","Briefing P5M","Aktivitas Lain", "Issues"
         ],
         icons=[
         "speedometer2",      # Overview
@@ -151,7 +151,8 @@ with st.sidebar:
         "check2-square",     # Tes Praktik
         "arrow-clockwise",   # Refresh
         "megaphone",         # Briefing P5M
-        "three-dots"
+        "three-dots",
+        "exclamation-triangle",
         ],
         styles={
             "icon": {
@@ -191,6 +192,7 @@ import TrainingA2B
 import Refresh
 import P5M
 import Lainnya
+import Issues
 
 # PAGES = {
 #     "Overview": None,
@@ -364,7 +366,7 @@ if selected == "Overview":
     week1_start = date(2026, 1, 2)
     today = date.today()
     days_since = (today - week1_start).days
-    current_week = (days_since // 7)
+    current_week = (days_since // 7) + 1
     default_week = f"Week {current_week}"
     default_week = [default_week] if default_week in weeks else []
 
@@ -599,7 +601,8 @@ elif selected == "Refresh":
 elif selected == "Briefing P5M":
     P5M.app()
 
-elif selected == "Lainnya":
+elif selected == "Aktivitas Lain":
     Lainnya.app()
 
-
+elif selected == "Issues":
+    Issues.app()
