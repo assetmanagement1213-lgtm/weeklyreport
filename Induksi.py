@@ -53,7 +53,7 @@ def app():
     # ================= WEEK FILTER ==================
     weeks = sorted(df_induksi["Week"].dropna().unique())
 
-    week1_start = date(2026, 1, 2)
+    week1_start = date(2026, 1, 8)
     today = date.today()
     days_since = (today - week1_start).days
     current_week = (days_since // 7)
@@ -429,6 +429,7 @@ def app():
                     with col:
 
                         st.error(f"Error load: {e}")
+
 
 
 
