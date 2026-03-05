@@ -56,7 +56,7 @@ def app():
 
     weeks = sorted(df_praktik["Week"].dropna().unique())
 
-    week1_start = date(2026, 1, 2)
+    week1_start = date(2026, 1, 1)
     today = date.today()
     days_since = (today - week1_start).days
     current_week = (days_since // 7)
@@ -804,6 +804,7 @@ def app():
                 except Exception as e:
                     with col:
                         st.error(f"Error load: {e}")
+
 
 
 
