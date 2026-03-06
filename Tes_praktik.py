@@ -383,7 +383,7 @@ def app():
 
                 available_bus_sem = [bu for bu in possible_bus if bu in pivot_sem.columns]
 
-                if len(available_bus) == 0:
+                if len(available_bus_sem) == 0:
                     st.info("Tidak ada data untuk ditampilkan.")
                 else:
                     bu_totals_sem= {bu: pivot_sem[bu].sum() for bu in available_bus_sem}
@@ -437,7 +437,7 @@ def app():
                 possible_bus = ["DCM", "HPAL", "ONC"]
                 available_bus_sem= [bu for bu in possible_bus if bu in pivot_sem.columns]
 
-                if len(available_bus) == 0:
+                if len(available_bus_sem) == 0:
                     pivot_sem["Total"] = 0
                 else:
                     pivot_sem["Total"] = pivot_sem[available_bus_sem].sum(axis=1)
@@ -804,6 +804,7 @@ def app():
                 except Exception as e:
                     with col:
                         st.error(f"Error load: {e}")
+
 
 
 
