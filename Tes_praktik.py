@@ -369,7 +369,7 @@ def app():
     with col3:
         with st.container(border=True):
             header3=st.container()
-            sementara=df_praktik[df_praktik["Kategori"] == "Penambahan Versatility"]
+            sementara=filtered_praktik[filtered_praktik["Kategori"] == "Penambahan Versatility"]
             pivot_sem = sementara.pivot_table(
                 index="Perusahaan",
                 columns="BU",
@@ -804,6 +804,7 @@ def app():
                 except Exception as e:
                     with col:
                         st.error(f"Error load: {e}")
+
 
 
 
