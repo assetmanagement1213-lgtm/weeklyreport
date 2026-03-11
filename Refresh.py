@@ -75,7 +75,7 @@ def app():
     values_dok = ws_dok.get("D:L")
     dokumentasi = pd.DataFrame(values_dok[1:], columns=values_dok[0])
 
-    weeks = sorted(violation["Week"].dropna().unique())
+    weeks = sorted(dokumentasi["Week"].dropna().unique())
 
     week1_start = date(2026, 1, 1)
     today = date.today()
@@ -914,5 +914,6 @@ def app():
                 except Exception as e:
                     with col:
                         st.error(f"Error load: {e}")
+
 
 
