@@ -43,6 +43,7 @@ def app():
     ws_dok = sheet_dok.worksheet("Dokumentasi")
     values_dok = ws_dok.get("D:L")
     dokumentasi = pd.DataFrame(values_dok[1:], columns=values_dok[0])
+    dokumentasi =  dokumentasi[(dokumentasi["Year"]=="2026")]
 
     # ================= WEEK FILTER ==================
     weeks = sorted(dokumentasi["Week"].dropna().unique())
