@@ -410,7 +410,7 @@ if selected == "Overview":
             text-align: center;
             diplay: inline-block;
         }
-        [class="stColumn st-emotion-cache-1qlw70m e12zf7d52"] {
+        [class="stColumn st-emotion-cache-gd419s e1rw0b1u2"] {
             background-color: white;
             box-shadow: 0 3px 8px rgba(0,0,0,0.08);
             text-align: center;
