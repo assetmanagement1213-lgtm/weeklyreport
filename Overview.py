@@ -404,7 +404,7 @@ if selected == "Overview":
             margin-top: 0px;
             color: white;
         }
-        [class="stColumn st-emotion-cache-1lq70ut e12zf7d52"] {
+        [class="stColumn st-emotion-cache-w16d7j e1rw0b1u2"] {
             background-color: white;
             box-shadow: 0 3px 8px rgba(0,0,0,0.08);
             text-align: center;
