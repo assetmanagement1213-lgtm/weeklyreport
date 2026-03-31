@@ -173,7 +173,7 @@ def app():
             box-shadow: 0 4px 12px rgba(0,0,0,0.06);
             margin-bottom: 24px;
         }
-        [class="stVerticalBlock st-emotion-cache-1ne20ew e12zf7d53"] {
+        [class="stVerticalBlock st-emotion-cache-1ne20ew e1rw0b1u3"] {
             background-color: white;
             box-shadow: 0 3px 8px rgba(0,0,0,0.08);
             text-align: center;
