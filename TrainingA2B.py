@@ -84,7 +84,7 @@ def app():
 
     filteredTraining = df_training[df_training["Week"].isin(week_filter)]
     training_dokumentasi = dokumentasi[
-        (dokumentasi["Week"].isin(week_filter)) &
+        (dokumentasi["Week"].isin(week_filter)) & (dokumentasi["Kegiatan"] == "Training") &
         (dokumentasi["Year"] == "2026")
     ]
     with w : 
