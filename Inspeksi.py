@@ -410,6 +410,7 @@ def app():
                 pivot2026_tabel_inspeksi = pivot2026_tabel_inspeksi.sort_values("Total", ascending=False, ignore_index=True)
                 pivot2026_tabel_inspeksi.index = pivot2026_tabel_inspeksi.index + 1
                 st.dataframe(pivot2026_tabel_inspeksi, height=400)
+                
         with st.expander("TOP 10 Temuan Inspeksi Weekly"):
             top_temuan_weekly = (
                 filtered_temuan
