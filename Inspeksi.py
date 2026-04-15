@@ -447,7 +447,7 @@ def app():
 
             st.plotly_chart(fig_temuan_weekly, use_container_width=True,key="bar_temuan_weekly")
         
-        with st.expander("TOP 10 Temuan Inspeksi"):
+        with st.expander("TOP 10 Temuan Inspeksi 2026"):
             top_temuan = (
                 df_temuan
                 .groupby("Klasifikasi Temuan", as_index=False)
