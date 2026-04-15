@@ -64,7 +64,7 @@ def app():
 
     #temuan
     ws_temuan = sheet_inspeksi.worksheet("Olah Temuan")
-    values_temuan = ws_temuan.get("A:G")
+    values_temuan = ws_temuan.get("A:H")
     df_temuan = pd.DataFrame(values_temuan[1:],columns=values_temuan[0])
 
     #dokumentasi
