@@ -410,6 +410,42 @@ def app():
                 pivot2026_tabel_inspeksi = pivot2026_tabel_inspeksi.sort_values("Total", ascending=False, ignore_index=True)
                 pivot2026_tabel_inspeksi.index = pivot2026_tabel_inspeksi.index + 1
                 st.dataframe(pivot2026_tabel_inspeksi, height=400)
+        with st.expander("TOP 10 Temuan Inspeksi Weekly"):
+            top_temuan_weekly = (
+                filtered_temuan
+                .groupby("Klasifikasi Temuan", as_index=False)
+                .size()
+                .rename(columns={"size": "Jumlah"})
+                .sort_values("Jumlah", ascending=False)
+                .head(10)  
+            )
+
+            fig_temuan_weekly= px.bar(
+                top_temuan_weekly,
+                x="Jumlah",
+                y="Klasifikasi Temuan",
+                orientation="h",
+                text="Jumlah",
+            )
+
+            fig_temuan_weekly.update_traces(textposition="outside")
+            fig_temuan_weekly.update_layout(
+                yaxis=dict(autorange="reversed"),
+                font=dict(
+                    color="black",
+                    size=14
+                ),
+                plot_bgcolor="white",
+                paper_bgcolor="white"
+            )
+            fig_temuan_weekly.update_yaxes(
+            tickfont=dict(
+                size=16,
+                color="black")
+            )
+
+            st.plotly_chart(fig_temuan_weekly, use_container_width=True,key="bar_temuan_weekly")
+        
         with st.expander("TOP 10 Temuan Inspeksi"):
             top_temuan = (
                 df_temuan
