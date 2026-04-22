@@ -609,5 +609,5 @@ elif selected == "Aktivitas Lain":
 elif selected == "Issues":
     Issues.app()
 
-elif selected == "Dwonload":
+elif selected == "Download Report":
     Download.app()
