@@ -250,14 +250,20 @@ def app():
         html = f"""
         <html>
         <head>
+         <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;600&display=swap" rel="stylesheet">
         <style>
             body {{
-                font-family: Figtree;
+                font-family: 'Figtree', sans-serif;
                 padding:20px;
                 background: linear-gradient(135deg, #eef2ff, #f8fafc);
             }}
-            .kpi-container {{display:flex; gap:20px;padding: 10px;}}
+            .kpi-container {{display: flex;
+                gap: 20px;
+                padding: 10px;
+                justify-content: center;
+                flex-wrap: wrap;}}
             .kpi {{
+                
                 border:1px solid #ddd;
                 box-shadow: 0 3px 8px rgba(0,0,0,0.08);
                 padding:10px;
@@ -266,6 +272,9 @@ def app():
                 text-align:center;
                 background-color: #fff}}
             .kpi2 {{
+                flex: 1;
+                min-width: 500px;
+                max-width: 48%;
                 padding:15px;
                 border-radius:10px;
                 border:1px solid #ddd;
@@ -287,7 +296,7 @@ def app():
                 box-shadow: 0 3px 8px rgba(0,0,0,0.08);
                 border-radius:10px;
                 text-align:center;
-                max-width:1400px;background-color: #fff
+                max-width:1500px;background-color: #fff
             }}
             .square-img {{
                 width: 100%;
@@ -313,6 +322,9 @@ def app():
                 font-size: 14px;
                 margin-top: 6px;
                 color: #444;
+            }}
+            h1, h2, h3 {{
+                font-weight: 600;
             }}
         </style>
         <style>
@@ -410,7 +422,7 @@ def app():
             values="Nama",
             aggfunc="count",
             fill_value=0
-        ).reset_index()
+        ).rename_axis(None, axis=1).reset_index()
 
         bu_counts = (
             filtered_induksi["BU"]
