@@ -10,3 +10,5 @@ requests
 plotly
 streamlit_navigation_bar
 plotly_express
+plotly==5.24.1
+kaleido==0.2.1
