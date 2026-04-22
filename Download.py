@@ -149,13 +149,13 @@ def app():
 
     data = df.iloc[:, 3:7]
 
-    weeks = sorted(data["Week"].dropna().unique())
-    week1_start = date(2026, 1, 2)
+    week1_start = date(2026, 1, 1)
     today = date.today()
     days_since = (today - week1_start).days
-    current_week = (days_since // 7) + 1
+    current_week = (days_since // 7)
     default_week = f"Week {current_week}"
     default_week = [default_week] if default_week in weeks else []
+    
     week_filter = st.multiselect("Pilih Week", weeks, default=default_week,width=250)
     filtered_df = data[
     data["Week"].isin(week_filter)]
