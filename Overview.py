@@ -138,7 +138,7 @@ with st.sidebar:
         options=[
             "Overview","Induksi","Training","Complience Rate",
             "Com/Re-com","Inspeksi & Observasi",
-            "SIMPER","Tes Praktik","Refresh","Briefing P5M","Aktivitas Lain", "Issues"
+            "SIMPER","Tes Praktik","Refresh","Briefing P5M","Aktivitas Lain", "Issues", "Download Report"
         ],
         icons=[
         "speedometer2",      # Overview
@@ -153,6 +153,7 @@ with st.sidebar:
         "megaphone",         # Briefing P5M
         "three-dots",
         "exclamation-triangle",
+        "download",
         ],
         styles={
             "icon": {
@@ -193,6 +194,7 @@ import Refresh
 import P5M
 import Lainnya
 import Issues
+import Download
 
 # PAGES = {
 #     "Overview": None,
@@ -606,3 +608,6 @@ elif selected == "Aktivitas Lain":
 
 elif selected == "Issues":
     Issues.app()
+
+elif selected == "Dwonload":
+    Download.app()
