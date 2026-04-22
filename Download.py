@@ -2339,7 +2339,69 @@ def app():
         html += "</div>"
         return html
     
-        #Issues
+    #Lainnya
+    lainnya_dokumentasi = dokumentasi[
+        (dokumentasi["Week"].isin(week_filter))&
+        (dokumentasi["Kegiatan"]=="Lainnya") &
+        (dokumentasi["Year"]=="2026")
+        ]
+    def generate_lainnya_html(week_filter, lainnya_dokumentasi):
+        import requests
+        import base64
+        judul_week = ", ".join(week_filter) if week_filter else "Semua Week"
+        # kalau kosong
+        if lainnya_dokumentasi.empty:
+            return "<p>Tidak ada data yang dapat ditampilkan.</p>"
+
+        html = f"""
+        <h2 style="text-align:center;">🤝🏻 Kegiatan Lainnya {judul_week}</h2>
+
+        <div style="
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+        ">
+        """
+
+        for _, row in lainnya_dokumentasi.iterrows():
+            url = row.get("url_clean", "")
+
+            if not url:
+                continue
+
+            try:
+                response = requests.get(url, timeout=10)
+                content_type = response.headers.get("Content-Type", "")
+
+                lokasi = row.get("Lokasi", "")
+                materi = row.get("Keterangan", "")
+
+                if "image" in content_type:
+                    img_base64 = base64.b64encode(response.content).decode()
+
+                    html += f"""
+                    <div>
+                        <div class="square-img">
+                            <img src="data:image/jpeg;base64,{img_base64}">
+                        </div>
+
+                        <div class="img-caption">
+                            <b>{lokasi}</b><br>
+                            {materi}
+                        </div>
+                    </div>
+                    """
+                else:
+                    html += f"<p>Link bukan gambar: {url}</p>"
+
+            except Exception as e:
+                html += f"<p>Gagal load gambar: {e}</p>"
+
+        html += "</div>"
+
+        return html
+
+    #Issues
     ssissues = "ASSET MANAGEMENT 2026"
     sheetissues = client.open(ssissues)
     worksheetissues = sheetissues.worksheet("Feedback Issues")
@@ -2496,6 +2558,9 @@ def app():
         week_filter, filtered_p5m    
     )
 
+    lainnya_html=generate_lainnya_html(week_filter, lainnya_dokumentasi)
+
+
     issues_html = generate_issues_html(
         dfissues, filtered_issues, week_filter   
     )
@@ -2511,6 +2576,7 @@ def app():
         + training_html
         + CR_html
         + p5m_html
+        + lainnya_html
         + issues_html
         + "</body></html>"
 )
