@@ -149,6 +149,7 @@ def app():
 
     data = df.iloc[:, 3:7]
 
+    weeks = sorted(data["Week"].dropna().unique())
     week1_start = date(2026, 1, 1)
     today = date.today()
     days_since = (today - week1_start).days
