@@ -11,10 +11,7 @@ def app():
     from google.oauth2 import service_account
     from google.oauth2.service_account import Credentials
     import base64
-
-    SHEET_ID = "1aL4qAd8MPbKXnvN_2aeQcmwHVhrApBgEwGxbY8vB7gI"
-    SHEET_DATA = "Data"
-    SHEET_MANPOWER = "Manpower"
+    import time
 
     SCOPES = [
         "https://www.googleapis.com/auth/spreadsheets",
@@ -27,6 +24,7 @@ def app():
 
     client = gspread.authorize(creds)
 
+    ##definition funtion
     @st.cache_resource
     def get_gspread_client():
         creds = service_account.Credentials.from_service_account_info(
@@ -36,34 +34,28 @@ def app():
         return gspread.authorize(creds)
 
     gc = get_gspread_client()
+    def load_sheet(client, spreadsheet_name, worksheet_name, cell_range=None, retry=3):
+        for i in range(retry):
+            try:
+                sheet = client.open(spreadsheet_name)
+                ws = sheet.worksheet(worksheet_name)
 
-    @st.cache_data(ttl=300) 
-    def load_sheet(sheet_name: str) -> pd.DataFrame:
-        sh = gc.open_by_key(SHEET_ID)
-        ws = sh.worksheet(sheet_name)
+                if cell_range:
+                    values = ws.get(cell_range)
+                else:
+                    values = ws.get_all_values()
 
-        values = ws.get_all_values()
-        headers = values[0]
-        rows = values[1:]
+                return pd.DataFrame(values[1:], columns=values[0])
 
-        seen = {}
-        unique_headers = []
-        for h in headers:
-            if h in seen:
-                seen[h] += 1
-                unique_headers.append(f"{h}_{seen[h]}")
-            else:
-                seen[h] = 0
-                unique_headers.append(h)
-
-        df = pd.DataFrame(rows, columns=unique_headers)
-        return df
-    
+            except gspread.exceptions.APIError as e:
+                if "429" in str(e) and i < retry - 1:
+                    time.sleep(5)
+                else:
+                    raise
     def fig_to_base64(fig):
         if fig is None:
             return ""
-        return base64.b64encode(fig.to_image(format="png")).decode()
-    
+        return base64.b64encode(fig.to_image(format="png")).decode()    
     def create_bar_chart(df, color_map):
         import plotly.express as px
 
@@ -85,7 +77,6 @@ def app():
             margin=dict(l=20, r=20, t=20, b=20)
         )
         return fig
-
     def create_pie_chart(pivot, color_map):
         import plotly.express as px
         import pandas as pd
@@ -138,17 +129,47 @@ def app():
 
         return fig
 
-    ssDokumentasi = "DOKUMENTASI"
-    sheetDokumentasi = client.open(ssDokumentasi)
-    wsDok = sheetDokumentasi.worksheet("Dokumentasi")
-    valuesDok = wsDok.get("D:L")
-    dokumentasi = pd.DataFrame(valuesDok[1:],columns=valuesDok[0])
+    #load data all
+    dokumentasi = load_sheet(client,"DOKUMENTASI", "Dokumentasi", "D:L")
+    time.sleep(2)
+    data = load_sheet(client,"SUMMARY ALL DATA 2026", "Data", "D:G")
+    time.sleep(2)
+    df_manpower = load_sheet(client, "SUMMARY ALL DATA 2026", "Manpower", "A:C")
+    time.sleep(2)
+    dfInduksi = load_sheet(client, "8. INDUKSI ALL BU 2026", "2026", "D:N")
+    time.sleep(2)
+    dfInspeksi = load_sheet(client, "INSPEKSI ALL BU 2026", "2026", "E:O")
+    time.sleep(2)
+    df_temuan = load_sheet(client, "INSPEKSI ALL BU 2026", "Olah Temuan", "A:H")
+    time.sleep(2)
+    dfObservasi = load_sheet(client, "OBSERVASI ALL BU 2026", "Observasi", "A:O")
+    time.sleep(2)
+    dfRecom = load_sheet(client, "COMMISSIONING & RECOMMISSIONING ALL BU 2026", "2026", "D:U")
+    time.sleep(2)
+    df_temuan_recom = load_sheet(client,"COMMISSIONING & RECOMMISSIONING ALL BU 2026", "Olah Temuan", "A:H" )
+    time.sleep(2)
+    dfViolation = load_sheet(client, "REFRESH VIOLATION 2026", "2026", "D:U")
+    time.sleep(2)
+    refresh = load_sheet(client, "TRAINING 2026", "Teknik Pengoperasian", "A:O")
+    time.sleep(2)
+    pembekalan = load_sheet(client, "PEMBEKALAN ORIENTASI 2026", "2026", "A:M")
+    time.sleep(2)
+    ddc = load_sheet(client, "DEFENSIVE DRIVING ALL BU 2026", "2026", "A:M")
+    time.sleep(2)
+    df_simper = load_sheet(client, "7. DATA SIMPER ALL BU 2026", "2026", "A:J")
+    time.sleep(2)
+    df_praktik = load_sheet(client, "TES PRAKTIK ALL BU 2026", "2026", "A:Q")
+    time.sleep(2)
+    df_training = load_sheet(client, "TRAINING 2026", "Training", "E:Q")
+    time.sleep(2)
+    dfCR = load_sheet(client, "TRAINING 2026", "Training Complience Rate", "E:R")
+    time.sleep(2)
+    dfp5m = load_sheet(client, "6. BRIEFING P5M 2026", "2026", "E:V")
+    time.sleep(2)
+    dfissues = load_sheet(client, "ASSET MANAGEMENT 2026", "Feedback Issues", "A:I")
 
-    df = load_sheet(SHEET_DATA)
-    df_manpower = load_sheet(SHEET_MANPOWER)
-
-    data = df.iloc[:, 3:7]
-
+    #Overview
+    #week Filter
     weeks = sorted(data["Week"].dropna().unique())
     week1_start = date(2026, 1, 1)
     today = date.today()
@@ -156,10 +177,9 @@ def app():
     current_week = (days_since // 7)
     default_week = f"Week {current_week}"
     default_week = [default_week] if default_week in weeks else []
-    
     week_filter = st.multiselect("Pilih Week", weeks, default=default_week,width=250)
-    filtered_df = data[
-    data["Week"].isin(week_filter)]
+
+    filtered_df = data[data["Week"].isin(week_filter)]
     sum_kegiatan = (
         filtered_df.groupby(["BU", "Kegiatan"])["Jumlah"]
         .sum()
@@ -191,10 +211,495 @@ def app():
     pivot_tabel = pivot.sort_values("Total", ascending=False, ignore_index=True)
     pivot_tabel.index = pivot_tabel.index + 1
 
-    st.title("📥 Download Report")
+    #Induksi
+    filtered_induksi = dfInduksi[dfInduksi["Week"].isin(week_filter)]
+    induksi_dokumentasi = dokumentasi[
+        (dokumentasi["Week"].isin(week_filter)) &
+        (dokumentasi["Kegiatan"] == "Induksi") &
+        (dokumentasi["Year"]=="2026")
+    ]
+    pivot_induksi = filtered_induksi.pivot_table(
+        index="Perusahaan",
+        columns="BU",
+        values="Nama",
+        aggfunc="count",
+        fill_value=0
+    ).rename_axis(None, axis=1).reset_index()
+    bu_counts_induksi = (
+        filtered_induksi["BU"]
+        .value_counts()
+        .reindex(possible_bus, fill_value=0)
+        .reset_index()
+    )
+    bu_counts_induksi.columns = ["BU", "Total"]
+
+    pivot_induksi2026 = dfInduksi.pivot_table(
+        index="Perusahaan",
+        columns="BU",
+        values="Nama",
+        aggfunc="count",
+        fill_value=0
+    ).rename_axis(None, axis=1).reset_index()
+
+    #Inspeksi & Temuan
+    df_inspeksi = dfInspeksi[dfInspeksi["BU"].notna() & (dfInspeksi["BU"].str.strip() != "")]
+    filtered_inspeksi = df_inspeksi[df_inspeksi["Week"].isin(week_filter)]
+    inspeksi_dokumentasi = dokumentasi[
+        (dokumentasi["Week"].isin(week_filter)) &
+        (dokumentasi["Kegiatan"] == "Inspeksi & Observasi") &
+        (dokumentasi["Year"]=="2026")]
+    pivot_inspeksi =filtered_inspeksi.pivot_table(
+        index="Departement",
+        columns="BU",
+        values="Nomor Lambung",
+        aggfunc="count",
+        fill_value=0
+    ).rename_axis(None, axis=1).reset_index()
+    bu_counts_inspeksi = (
+        filtered_inspeksi["BU"]
+        .value_counts()
+        .reindex(possible_bus, fill_value=0)
+        .reset_index()
+    )
+    bu_counts_inspeksi.columns = ["BU", "Total"]
+
+    pivot_inspeksi2026 =df_inspeksi.pivot_table(
+        index="Departement",
+        columns="BU",
+        values="Nomor Lambung",
+        aggfunc="count",
+        fill_value=0
+    ).rename_axis(None, axis=1).reset_index()
+    #Temuan Inspeksi
+    df_temuan = load_sheet(client, "INSPEKSI ALL BU 2026", "Olah Temuan", "A:H")
+    filtered_temuan = df_temuan[df_temuan["Week"].isin(week_filter)]
+
+    #Observasi
+    df_observasi = dfObservasi[dfObservasi["BU"].notna() & (dfObservasi["BU"].str.strip() != "")]
+    filtered_observasi = df_observasi[df_observasi["Week"].isin(week_filter)]
+    pivot_observasi =filtered_observasi.pivot_table(
+        index="Departemen",
+        columns="BU",
+        values="Driver/Operator",
+        aggfunc="count",
+        fill_value=0
+    ).rename_axis(None, axis=1).reset_index()
+    bu_counts_observasi= (
+        filtered_observasi["BU"]
+        .value_counts()
+        .reindex(possible_bus, fill_value=0)
+        .reset_index()
+    )
+    bu_counts_observasi.columns = ["BU", "Total"]
+
+    pivot_observasi2026 = df_observasi.pivot_table(
+        index="Departemen",
+        columns="BU",
+        values="Driver/Operator",
+        aggfunc="count",
+        fill_value=0
+    ).rename_axis(None, axis=1).reset_index()
+
+    #Commissioning & Recommissioning
+    filtered_recom = dfRecom[dfRecom["Week"].isin(week_filter)]
+    filtered_temuan_recom = df_temuan_recom[df_temuan_recom["Week"].isin(week_filter)]
+    com = dfRecom[dfRecom["Keterangan"] == "COMMISSIONING"]
+    recom = dfRecom[dfRecom["Keterangan"] == "RECOMMISSIONING"]
+
+    filtered_commissioning = filtered_recom[filtered_recom["Keterangan"] == "COMMISSIONING"]
+    filtered_recommissioning = filtered_recom[filtered_recom["Keterangan"] == "RECOMMISSIONING"]
     
-    ##Overview
-    def generate_overview_html(df_manpower, sum_kegiatan, pivot_tabel, week_filter):
+    recom_dokumentasi = dokumentasi[
+        (dokumentasi["Week"].isin(week_filter)) &
+        (dokumentasi["Kegiatan"].isin(["Recommissioning", "Commissining"])) &
+        (dokumentasi["Year"]=="2026")
+    ]
+
+    #commissioning
+    df_lulus_com=filtered_commissioning[filtered_commissioning["LULUS/TIDAK"] == "LULUS UJI KENDARAAN"]
+    pivot_lulus_com = df_lulus_com.pivot_table(
+            index="Departemen",
+            columns="BU",
+            values="No. Unit",
+            aggfunc="count",
+            fill_value=0
+        ).rename_axis(None, axis=1).reset_index()
+    
+    bu_counts_lulus_com= (
+        df_lulus_com["BU"]
+        .value_counts()
+        .reindex(possible_bus, fill_value=0)
+        .reset_index()
+    )
+    bu_counts_lulus_com.columns = ["BU", "Total"]
+    df_tidaklulus_com=filtered_commissioning[filtered_commissioning["LULUS/TIDAK"] == "BELUM LULUS UJI KENDARAAN"]
+    pivot_tidaklulus_com = df_tidaklulus_com.pivot_table(
+            index="Departemen",
+            columns="BU",
+            values="No. Unit",
+            aggfunc="count",
+            fill_value=0
+        ).rename_axis(None, axis=1).reset_index()
+
+    bu_counts_tidaklulus_com= (
+        df_tidaklulus_com["BU"]
+        .value_counts()
+        .reindex(possible_bus, fill_value=0)
+        .reset_index()
+    )
+    bu_counts_tidaklulus_com.columns = ["BU", "Total"]
+
+    #recommissioning
+    df_lulus_recom=filtered_recommissioning[filtered_recommissioning["LULUS/TIDAK"] == "LULUS UJI KENDARAAN"]
+    pivot_lulus_recom = df_lulus_recom.pivot_table(
+            index="Departemen",
+            columns="BU",
+            values="No. Unit",
+            aggfunc="count",
+            fill_value=0
+        ).rename_axis(None, axis=1).reset_index()
+    
+    bu_counts_lulus_recom= (
+        df_lulus_recom["BU"]
+        .value_counts()
+        .reindex(possible_bus, fill_value=0)
+        .reset_index()
+    )
+    bu_counts_lulus_recom.columns = ["BU", "Total"]
+    df_tidaklulus_recom=filtered_recommissioning[filtered_recommissioning["LULUS/TIDAK"] == "BELUM LULUS UJI KENDARAAN"]
+    pivot_tidaklulus_recom = df_tidaklulus_recom.pivot_table(
+            index="Departemen",
+            columns="BU",
+            values="No. Unit",
+            aggfunc="count",
+            fill_value=0
+        ).rename_axis(None, axis=1).reset_index()
+
+    bu_counts_tidaklulus_recom= (
+        df_tidaklulus_recom["BU"]
+        .value_counts()
+        .reindex(possible_bus, fill_value=0)
+        .reset_index()
+    )
+    bu_counts_tidaklulus_recom.columns = ["BU", "Total"]
+
+    #2026
+    pivot_recom = recom.pivot_table(
+            index="Departemen",
+            columns="BU",
+            values="No. Unit",
+            aggfunc="count",
+            fill_value=0
+        ).rename_axis(None, axis=1).reset_index()
+    
+    bu_counts_recom= (
+        recom["BU"]
+        .value_counts()
+        .reindex(possible_bus, fill_value=0)
+        .reset_index()
+    )
+    bu_counts_recom.columns = ["BU", "Total"]
+
+    pivot_com = com.pivot_table(
+            index="Departemen",
+            columns="BU",
+            values="No. Unit",
+            aggfunc="count",
+            fill_value=0
+        ).rename_axis(None, axis=1).reset_index()
+    
+    bu_counts_com= (
+        com["BU"]
+        .value_counts()
+        .reindex(possible_bus, fill_value=0)
+        .reset_index()
+    )
+    bu_counts_com.columns = ["BU", "Total"]
+
+    #Refresh VIolation
+    filtered_violation = dfViolation[dfViolation["Week"].isin(week_filter)]
+    refresh_dokumentasi = dokumentasi[
+        (dokumentasi["Week"].isin(week_filter)) &
+        (dokumentasi["Kegiatan"].isin(["Refresh", "Pembekalan"])) &
+        (dokumentasi["Year"]=="2026")
+    ]
+    pivot_dfVio = dfViolation.pivot_table(
+        index="Departement",
+        columns="BU",
+        values="Nama Karyawan",
+        aggfunc="count",
+        fill_value=0
+    ).rename_axis(None, axis=1).reset_index()
+    pivot_vio = filtered_violation.pivot_table(
+        index="Departement",
+        columns="BU",
+        values="Nama Karyawan",
+        aggfunc="count",
+        fill_value=0
+    ).rename_axis(None, axis=1).reset_index()
+    bu_counts_vio = (
+        filtered_violation["BU"]
+        .value_counts()
+        .reindex(possible_bus, fill_value=0)
+        .reset_index()
+    )
+    bu_counts_vio.columns = ["BU", "Total"]
+    #Refresh Non Violation
+    filtered_refresh= refresh[refresh["Week"].isin(week_filter)]
+    pivot_fullRefresh= refresh.pivot_table(
+        index="Departement",
+        columns="BU",
+        values="Nama",
+        aggfunc="count",
+        fill_value=0
+    ).rename_axis(None, axis=1).reset_index()
+    pivot_refresh = filtered_refresh.pivot_table(
+        index="Departement",
+        columns="BU",
+        values="Nama",
+        aggfunc="count",
+        fill_value=0
+    ).rename_axis(None, axis=1).reset_index()
+    bu_counts_refresh = (
+        filtered_refresh["BU"]
+        .value_counts()
+        .reindex(possible_bus, fill_value=0)
+        .reset_index()
+    )
+    bu_counts_refresh.columns = ["BU", "Total"]
+    #Pembekalan Orienrtasi
+    filtered_pembekalan= pembekalan[pembekalan["Week"].isin(week_filter)]
+    pivot_fullPembekalan= pembekalan.pivot_table(
+        index="Departement",
+        columns="BU",
+        values="Nama Karyawan",
+        aggfunc="count",
+        fill_value=0
+    ).rename_axis(None, axis=1).reset_index()
+    pivot_pembekalan = filtered_pembekalan.pivot_table(
+        index="Departement",
+        columns="BU",
+        values="Nama Karyawan",
+        aggfunc="count",
+        fill_value=0
+    ).rename_axis(None, axis=1).reset_index()
+    bu_counts_pembekalan = (
+        filtered_pembekalan["BU"]
+        .value_counts()
+        .reindex(possible_bus, fill_value=0)
+        .reset_index()
+    )
+    bu_counts_pembekalan.columns = ["BU", "Total"]
+    #DDC
+    filtered_ddc= ddc[ddc["Week"].isin(week_filter)]
+    pivot_fullddc= ddc.pivot_table(
+        index="Departemen",
+        columns="BU",
+        values="Nama",
+        aggfunc="count",
+        fill_value=0
+    ).rename_axis(None, axis=1).reset_index()
+    pivot_ddc = filtered_ddc.pivot_table(
+        index="Departemen",
+        columns="BU",
+        values="Nama",
+        aggfunc="count",
+        fill_value=0
+    ).rename_axis(None, axis=1).reset_index()
+    bu_counts_ddc = (
+        filtered_ddc["BU"]
+        .value_counts()
+        .reindex(possible_bus, fill_value=0)
+        .reset_index()
+    )
+    bu_counts_ddc.columns = ["BU", "Total"]
+
+    #SIMPER
+    filtered_simper = df_simper[df_simper["Week 2026"].isin(week_filter)]
+    #full
+    filtered_full=filtered_simper[filtered_simper["Status SIMPER"] == "F"]
+    full=df_simper[df_simper["Status SIMPER"] == "F"]
+    pivot_fullSIMPER= full.pivot_table(
+        index="Perusahaan",
+        columns="BU",
+        values="Nama",
+        aggfunc="count",
+        fill_value=0
+    ).rename_axis(None, axis=1).reset_index()
+    pivot_full = filtered_full.pivot_table(
+        index="Perusahaan",
+        columns="BU",
+        values="Nama",
+        aggfunc="count",
+        fill_value=0
+    ).rename_axis(None, axis=1).reset_index()
+
+    #probation
+    filtered_prob=filtered_simper[filtered_simper["Status SIMPER"] == "P"]
+    probation=df_simper[df_simper["Status SIMPER"] == "P"]
+    pivot_probSIMPER= probation.pivot_table(
+        index="Perusahaan",
+        columns="BU",
+        values="Nama",
+        aggfunc="count",
+        fill_value=0
+    ).rename_axis(None, axis=1).reset_index()
+    pivot_prob = filtered_prob.pivot_table(
+        index="Perusahaan",
+        columns="BU",
+        values="Nama",
+        aggfunc="count",
+        fill_value=0
+    ).rename_axis(None, axis=1).reset_index()
+
+    #sementara
+    filtered_sememntara=filtered_simper[filtered_simper["Status SIMPER"] == "T"]
+    sementara=df_simper[df_simper["Status SIMPER"] == "T"]
+    pivot_semSIMPER= sementara.pivot_table(
+        index="Perusahaan",
+        columns="BU",
+        values="Nama",
+        aggfunc="count",
+        fill_value=0
+    ).rename_axis(None, axis=1).reset_index()
+    pivot_sementara = filtered_sememntara.pivot_table(
+        index="Perusahaan",
+        columns="BU",
+        values="Nama",
+        aggfunc="count",
+        fill_value=0
+    ).rename_axis(None, axis=1).reset_index()
+
+    #Tes Praktik
+    filtered_praktik = df_praktik[df_praktik["Week"].isin(week_filter)]
+
+    praktik_dokumentasi = dokumentasi[
+        (dokumentasi["Week"].isin(week_filter)) &
+        (dokumentasi["Kegiatan"] == "Tes Praktik") &(dokumentasi["Year"]=="2026")
+    ]
+
+    #kandidat
+    filtered_kandidat=filtered_praktik[filtered_praktik["Kategori"] == "TES KANDIDAT"]
+    kandidat=df_praktik[df_praktik["Kategori"] == "TES KANDIDAT"]
+    pivot_kandidat2026= kandidat.pivot_table(
+        index="Perusahaan",
+        columns="BU",
+        values="Nama",
+        aggfunc="count",
+        fill_value=0
+    ).rename_axis(None, axis=1).reset_index()
+    pivot_kandidat = filtered_kandidat.pivot_table(
+        index="Perusahaan",
+        columns="BU",
+        values="Nama",
+        aggfunc="count",
+        fill_value=0
+    ).rename_axis(None, axis=1).reset_index()
+
+    #praktik
+    filtered_tespraktik=filtered_praktik[filtered_praktik["Kategori"] == "TES PRAKTIK"]
+    praktik=df_praktik[df_praktik["Kategori"] == "TES PRAKTIK"]
+    pivot_praktik2026= praktik.pivot_table(
+        index="Perusahaan",
+        columns="BU",
+        values="Nama",
+        aggfunc="count",
+        fill_value=0
+    ).rename_axis(None, axis=1).reset_index()
+    pivot_praktik= filtered_tespraktik.pivot_table(
+        index="Perusahaan",
+        columns="BU",
+        values="Nama",
+        aggfunc="count",
+        fill_value=0
+    ).rename_axis(None, axis=1).reset_index()
+
+    #penambahan
+    filtered_penambahan=filtered_praktik[filtered_praktik["Kategori"] == "Penambahan Versatility"]
+    penambahan=df_praktik[df_praktik["Kategori"] == "Penambahan Versatility"]
+    pivot_penambahan2026= penambahan.pivot_table(
+        index="Perusahaan",
+        columns="BU",
+        values="Nama",
+        aggfunc="count",
+        fill_value=0
+    ).rename_axis(None, axis=1).reset_index()
+    pivot_penambahan = filtered_penambahan.pivot_table(
+        index="Perusahaan",
+        columns="BU",
+        values="Nama",
+        aggfunc="count",
+        fill_value=0
+    ).rename_axis(None, axis=1).reset_index()
+
+    #Training
+    filtered_training = df_training[df_training["Week"].isin(week_filter)]
+    training_dokumentasi = dokumentasi[
+        (dokumentasi["Week"].isin(week_filter)) &
+        (dokumentasi["Kegiatan"] == "Training") &
+        (dokumentasi["Year"]=="2026")
+    ]
+    bu_counts_training = (
+        filtered_training["BU"]
+        .value_counts()
+        .reindex(possible_bus, fill_value=0)
+        .reset_index()
+    )
+    bu_counts_training.columns = ["BU", "Total"]
+
+    pivot_training2026 = df_training.pivot_table(
+        index="Perusahaan",
+        columns="BU",
+        values="Nama",
+        aggfunc="count",
+        fill_value=0
+    ).rename_axis(None, axis=1).reset_index()
+
+    #Training Complience Rate
+    filtered_CR = dfCR[dfCR["Week"].isin(week_filter)]
+    CR_dokumentasi = dokumentasi[
+        (dokumentasi["Week"].isin(week_filter)) &
+        (dokumentasi["Kegiatan"] == "Complience Rate") &
+        (dokumentasi["Year"]=="2026")
+    ]
+    pivot_CR = filtered_CR.pivot_table(
+        index="Departement",
+        columns="Judul Training",
+        values="Nama",
+        aggfunc="count",
+        fill_value=0
+    ).rename_axis(None, axis=1).reset_index()
+    bu_counts_CR = (
+        filtered_CR["BU"]
+        .value_counts()
+        .reindex(possible_bus, fill_value=0)
+        .reset_index()
+    )
+    bu_counts_CR.columns = ["BU", "Total"]
+
+    pivot_CR2026 = dfCR.pivot_table(
+        index="Departement",
+        columns="BU",
+        values="Nama",
+        aggfunc="count",
+        fill_value=0
+    ).rename_axis(None, axis=1).reset_index()
+
+    #p5m
+    filtered_p5m = dfp5m[dfp5m["Week"].isin(week_filter)]
+
+    #Lainnya
+    lainnya_dokumentasi = dokumentasi[
+        (dokumentasi["Week"].isin(week_filter))&
+        (dokumentasi["Kegiatan"]=="Lainnya") &
+        (dokumentasi["Year"]=="2026")]
+
+    #Issues
+    filtered_issues= dfissues[dfissues["Week"].isin(week_filter)]
+
+    #generate
+    def generate_overview_html(df_manpower, sum_kegiatan, 
+                               pivot_tabel, week_filter):
 
         total_manpower = len(df_manpower)
         onsite = (df_manpower["On/Off Site"] == "On-Site").sum()
@@ -372,57 +877,15 @@ def app():
 
 
         return html
-
-    #INDUKSI
-    spreadsheetinduksi = "8. INDUKSI ALL BU 2026"
-    sheetinduksi = client.open(spreadsheetinduksi)
-    worksheetInduksi = sheetinduksi.worksheet("2026")
-    valuesInduksi = worksheetInduksi.get("D:N")
-    dfInduksi = pd.DataFrame(valuesInduksi[1:],columns=valuesInduksi[0])
-    filtered_induksi = dfInduksi[dfInduksi["Week"].isin(week_filter)]
-    induksi_dokumentasi = dokumentasi[
-        (dokumentasi["Week"].isin(week_filter)) &
-        (dokumentasi["Kegiatan"] == "Induksi") &
-        (dokumentasi["Year"]=="2026")
-    ]
-    pivot_induksi = filtered_induksi.pivot_table(
-        index="Perusahaan",
-        columns="BU",
-        values="Nama",
-        aggfunc="count",
-        fill_value=0
-    ).rename_axis(None, axis=1).reset_index()
-    bu_counts_induksi = (
-        filtered_induksi["BU"]
-        .value_counts()
-        .reindex(possible_bus, fill_value=0)
-        .reset_index()
-    )
-    bu_counts_induksi.columns = ["BU", "Total"]
-
-    pivot_induksi2026 = dfInduksi.pivot_table(
-        index="Perusahaan",
-        columns="BU",
-        values="Nama",
-        aggfunc="count",
-        fill_value=0
-    ).rename_axis(None, axis=1).reset_index()
-
-    def generate_induksi_html(week_filter, filtered_induksi, pivot_induksi2026, induksi_dokumentasi):
+    def generate_induksi_html(week_filter, filtered_induksi, 
+                              pivot_induksi, pivot_induksi2026, 
+                              induksi_dokumentasi):
         import requests
         import base64
         judul_week = ", ".join(week_filter) if week_filter else "Semua Week"
         total_induksi = len(filtered_induksi)
         total_perusahaan = filtered_induksi["Perusahaan"].nunique()
         total_dept = filtered_induksi["Department"].nunique()
-
-        pivot_induksi = filtered_induksi.pivot_table(
-            index="Perusahaan",
-            columns="BU",
-            values="Nama",
-            aggfunc="count",
-            fill_value=0
-        ).rename_axis(None, axis=1).reset_index()
 
         bu_counts = (
             filtered_induksi["BU"]
@@ -518,80 +981,11 @@ def app():
         html += "</div>"  # 🔥 tutup grid
 
         return html
-    
-
-    #INSPEKSI
-    spreadsheetinspeksi = "INSPEKSI ALL BU 2026"
-    sheetinspeksi = client.open(spreadsheetinspeksi)
-    worksheetInspeksi = sheetinspeksi.worksheet("2026")
-    valuesInspeksi= worksheetInspeksi.get("E:O")
-    dfInspeksi = pd.DataFrame(valuesInspeksi[1:],columns=valuesInspeksi[0])
-    df_inspeksi = dfInspeksi[dfInspeksi["BU"].notna() & (dfInspeksi["BU"].str.strip() != "")]
-    filtered_inspeksi = df_inspeksi[df_inspeksi["Week"].isin(week_filter)]
-    inspeksi_dokumentasi = dokumentasi[
-        (dokumentasi["Week"].isin(week_filter)) &
-        (dokumentasi["Kegiatan"] == "Inspeksi & Observasi") &
-        (dokumentasi["Year"]=="2026")]
-    pivot_inspeksi =filtered_inspeksi.pivot_table(
-        index="Departement",
-        columns="BU",
-        values="Nomor Lambung",
-        aggfunc="count",
-        fill_value=0
-    ).rename_axis(None, axis=1).reset_index()
-    bu_counts_inspeksi = (
-        filtered_inspeksi["BU"]
-        .value_counts()
-        .reindex(possible_bus, fill_value=0)
-        .reset_index()
-    )
-    bu_counts_inspeksi.columns = ["BU", "Total"]
-
-    pivot_inspeksi2026 =df_inspeksi.pivot_table(
-        index="Departement",
-        columns="BU",
-        values="Nomor Lambung",
-        aggfunc="count",
-        fill_value=0
-    ).rename_axis(None, axis=1).reset_index()
-    #Temuan Inspeksi
-    ws_temuan = sheetinspeksi.worksheet("Olah Temuan")
-    values_temuan = ws_temuan.get("A:H")
-    df_temuan = pd.DataFrame(values_temuan[1:],columns=values_temuan[0])
-    filtered_temuan = df_temuan[df_temuan["Week"].isin(week_filter)]
-
-    #Observasi
-    spreadsheetobservasi = "OBSERVASI ALL BU 2026"
-    sheetobservasi = client.open(spreadsheetobservasi)
-    worksheetObservasi = sheetobservasi.worksheet("Observasi")
-    valuesObservasi= worksheetObservasi.get("A:O")
-    dfObservasi = pd.DataFrame(valuesObservasi[1:],columns=valuesObservasi[0])
-    df_observasi = dfObservasi[dfObservasi["BU"].notna() & (dfObservasi["BU"].str.strip() != "")]
-    filtered_observasi = df_observasi[df_observasi["Week"].isin(week_filter)]
-    pivot_observasi =filtered_observasi.pivot_table(
-        index="Departemen",
-        columns="BU",
-        values="Driver/Operator",
-        aggfunc="count",
-        fill_value=0
-    ).rename_axis(None, axis=1).reset_index()
-    bu_counts_observasi= (
-        filtered_observasi["BU"]
-        .value_counts()
-        .reindex(possible_bus, fill_value=0)
-        .reset_index()
-    )
-    bu_counts_observasi.columns = ["BU", "Total"]
-
-    pivot_observasi2026 = df_observasi.pivot_table(
-        index="Departemen",
-        columns="BU",
-        values="Driver/Operator",
-        aggfunc="count",
-        fill_value=0
-    ).rename_axis(None, axis=1).reset_index()
-
-    def generate_inspeksi_html(week_filter, filtered_inspeksi,pivot_inspeksi,filtered_observasi, pivot_observasi, pivot_inspeksi2026, pivot_observasi2026, filtered_temuan, inspeksi_dokumentasi):
+    def generate_inspeksi_html(week_filter, filtered_inspeksi,
+                               pivot_inspeksi,filtered_observasi, 
+                               pivot_observasi, pivot_inspeksi2026, 
+                               pivot_observasi2026, filtered_temuan, 
+                               inspeksi_dokumentasi):
         import requests
         import plotly.express as px
         judul_week = ", ".join(week_filter) if week_filter else "Semua Week"
@@ -804,133 +1198,6 @@ def app():
         html += "</div>" 
 
         return html
-    
-
-    #Recommissioning
-    spreadsheetrecom = "COMMISSIONING & RECOMMISSIONING ALL BU 2026"
-    sheetrecom = client.open(spreadsheetrecom)
-    worksheetRecom = sheetrecom.worksheet("2026")
-    valuesRecom = worksheetRecom.get("D:U")
-    dfRecom = pd.DataFrame(valuesRecom[1:],columns=valuesRecom[0])
-    filtered_recom = dfRecom[dfRecom["Week"].isin(week_filter)]
-    ws_temuan_recom=sheetrecom.worksheet("Olah Temuan")
-    values_temuan_recom=ws_temuan_recom.get("A:H")
-    df_temuan_recom = pd.DataFrame(values_temuan_recom[1:],columns=values_temuan_recom[0])
-    filtered_temuan_recom = df_temuan_recom[df_temuan_recom["Week"].isin(week_filter)]
-
-    com = dfRecom[dfRecom["Keterangan"] == "COMMISSIONING"]
-    recom = dfRecom[dfRecom["Keterangan"] == "RECOMMISSIONING"]
-
-    filtered_commissioning = filtered_recom[filtered_recom["Keterangan"] == "COMMISSIONING"]
-    filtered_recommissioning = filtered_recom[filtered_recom["Keterangan"] == "RECOMMISSIONING"]
-    
-    recom_dokumentasi = dokumentasi[
-        (dokumentasi["Week"].isin(week_filter)) &
-        (dokumentasi["Kegiatan"].isin(["Recommissioning", "Commissining"])) &
-        (dokumentasi["Year"]=="2026")
-    ]
-
-    #commissioning
-    df_lulus_com=filtered_commissioning[filtered_commissioning["LULUS/TIDAK"] == "LULUS UJI KENDARAAN"]
-    pivot_lulus_com = df_lulus_com.pivot_table(
-            index="Departemen",
-            columns="BU",
-            values="No. Unit",
-            aggfunc="count",
-            fill_value=0
-        ).rename_axis(None, axis=1).reset_index()
-    
-    bu_counts_lulus_com= (
-        df_lulus_com["BU"]
-        .value_counts()
-        .reindex(possible_bus, fill_value=0)
-        .reset_index()
-    )
-    bu_counts_lulus_com.columns = ["BU", "Total"]
-    df_tidaklulus_com=filtered_commissioning[filtered_commissioning["LULUS/TIDAK"] == "BELUM LULUS UJI KENDARAAN"]
-    pivot_tidaklulus_com = df_tidaklulus_com.pivot_table(
-            index="Departemen",
-            columns="BU",
-            values="No. Unit",
-            aggfunc="count",
-            fill_value=0
-        ).rename_axis(None, axis=1).reset_index()
-
-    bu_counts_tidaklulus_com= (
-        df_tidaklulus_com["BU"]
-        .value_counts()
-        .reindex(possible_bus, fill_value=0)
-        .reset_index()
-    )
-    bu_counts_tidaklulus_com.columns = ["BU", "Total"]
-
-    #recommissioning
-    df_lulus_recom=filtered_recommissioning[filtered_recommissioning["LULUS/TIDAK"] == "LULUS UJI KENDARAAN"]
-    pivot_lulus_recom = df_lulus_recom.pivot_table(
-            index="Departemen",
-            columns="BU",
-            values="No. Unit",
-            aggfunc="count",
-            fill_value=0
-        ).rename_axis(None, axis=1).reset_index()
-    
-    bu_counts_lulus_recom= (
-        df_lulus_recom["BU"]
-        .value_counts()
-        .reindex(possible_bus, fill_value=0)
-        .reset_index()
-    )
-    bu_counts_lulus_recom.columns = ["BU", "Total"]
-    df_tidaklulus_recom=filtered_recommissioning[filtered_recommissioning["LULUS/TIDAK"] == "BELUM LULUS UJI KENDARAAN"]
-    pivot_tidaklulus_recom = df_tidaklulus_recom.pivot_table(
-            index="Departemen",
-            columns="BU",
-            values="No. Unit",
-            aggfunc="count",
-            fill_value=0
-        ).rename_axis(None, axis=1).reset_index()
-
-    bu_counts_tidaklulus_recom= (
-        df_tidaklulus_recom["BU"]
-        .value_counts()
-        .reindex(possible_bus, fill_value=0)
-        .reset_index()
-    )
-    bu_counts_tidaklulus_recom.columns = ["BU", "Total"]
-
-    #2026
-    pivot_recom = recom.pivot_table(
-            index="Departemen",
-            columns="BU",
-            values="No. Unit",
-            aggfunc="count",
-            fill_value=0
-        ).rename_axis(None, axis=1).reset_index()
-    
-    bu_counts_recom= (
-        recom["BU"]
-        .value_counts()
-        .reindex(possible_bus, fill_value=0)
-        .reset_index()
-    )
-    bu_counts_recom.columns = ["BU", "Total"]
-
-    pivot_com = com.pivot_table(
-            index="Departemen",
-            columns="BU",
-            values="No. Unit",
-            aggfunc="count",
-            fill_value=0
-        ).rename_axis(None, axis=1).reset_index()
-    
-    bu_counts_com= (
-        com["BU"]
-        .value_counts()
-        .reindex(possible_bus, fill_value=0)
-        .reset_index()
-    )
-    bu_counts_com.columns = ["BU", "Total"]
-
     def generate_recom_html(week_filter, filtered_recom,
                             filtered_commissioning,
                             filtered_recommissioning,
@@ -1176,128 +1443,6 @@ def app():
         html += "</div>" 
 
         return html
-    
-    #refresh
-    spreadsheetviolation= "REFRESH VIOLATION 2026"
-    sheetviolation = client.open(spreadsheetviolation)
-    worksheetViolation = sheetviolation.worksheet("2026")
-    valuesViolation = worksheetViolation.get("D:U")
-    dfViolation= pd.DataFrame(valuesViolation[1:],columns=valuesViolation[0])
-    filtered_violation = dfViolation[dfViolation["Week"].isin(week_filter)]
-    refresh_dokumentasi = dokumentasi[
-        (dokumentasi["Week"].isin(week_filter)) &
-        (dokumentasi["Kegiatan"].isin(["Refresh", "Pembekalan"])) &
-        (dokumentasi["Year"]=="2026")
-    ]
-    pivot_dfVio = dfViolation.pivot_table(
-        index="Departement",
-        columns="BU",
-        values="Nama Karyawan",
-        aggfunc="count",
-        fill_value=0
-    ).rename_axis(None, axis=1).reset_index()
-    pivot_vio = filtered_violation.pivot_table(
-        index="Departement",
-        columns="BU",
-        values="Nama Karyawan",
-        aggfunc="count",
-        fill_value=0
-    ).rename_axis(None, axis=1).reset_index()
-    bu_counts_vio = (
-        filtered_violation["BU"]
-        .value_counts()
-        .reindex(possible_bus, fill_value=0)
-        .reset_index()
-    )
-    bu_counts_vio.columns = ["BU", "Total"]
-
-    #refresh non violation
-    sp_refresh = "TRAINING 2026"
-    sheet_refresh = client.open(sp_refresh)
-    ws_refresh = sheet_refresh.worksheet("Teknik Pengoperasian")
-    values_refresh = ws_refresh.get("A:O")
-    refresh = pd.DataFrame(values_refresh[1:], columns=values_refresh[0])
-    filtered_refresh= refresh[refresh["Week"].isin(week_filter)]
-    pivot_fullRefresh= refresh.pivot_table(
-        index="Departement",
-        columns="BU",
-        values="Nama",
-        aggfunc="count",
-        fill_value=0
-    ).rename_axis(None, axis=1).reset_index()
-    pivot_refresh = filtered_refresh.pivot_table(
-        index="Departement",
-        columns="BU",
-        values="Nama",
-        aggfunc="count",
-        fill_value=0
-    ).rename_axis(None, axis=1).reset_index()
-    bu_counts_refresh = (
-        filtered_refresh["BU"]
-        .value_counts()
-        .reindex(possible_bus, fill_value=0)
-        .reset_index()
-    )
-    bu_counts_refresh.columns = ["BU", "Total"]
-
-    #pembekalan orientasi
-    sp_pembekalan = "PEMBEKALAN ORIENTASI 2026"
-    sheet_pembekalan = client.open(sp_pembekalan)
-    ws_pembekalan = sheet_pembekalan.worksheet("2026")
-    values_pembekalan = ws_pembekalan.get("A:M")
-    pembekalan = pd.DataFrame(values_pembekalan[1:], columns=values_pembekalan[0])
-    filtered_pembekalan= pembekalan[pembekalan["Week"].isin(week_filter)]
-    pivot_fullPembekalan= pembekalan.pivot_table(
-        index="Departement",
-        columns="BU",
-        values="Nama Karyawan",
-        aggfunc="count",
-        fill_value=0
-    ).rename_axis(None, axis=1).reset_index()
-    pivot_pembekalan = filtered_pembekalan.pivot_table(
-        index="Departement",
-        columns="BU",
-        values="Nama Karyawan",
-        aggfunc="count",
-        fill_value=0
-    ).rename_axis(None, axis=1).reset_index()
-    bu_counts_pembekalan = (
-        filtered_pembekalan["BU"]
-        .value_counts()
-        .reindex(possible_bus, fill_value=0)
-        .reset_index()
-    )
-    bu_counts_pembekalan.columns = ["BU", "Total"]
-
-    #defensive driving
-    sp_ddc = "DEFENSIVE DRIVING ALL BU 2026"
-    sheet_ddc = client.open(sp_ddc)
-    ws_ddc = sheet_ddc.worksheet("2026")
-    values_ddc = ws_ddc.get("A:M")
-    ddc = pd.DataFrame(values_ddc[1:], columns=values_ddc[0])
-    filtered_ddc= ddc[ddc["Week"].isin(week_filter)]
-    pivot_fullddc= ddc.pivot_table(
-        index="Departemen",
-        columns="BU",
-        values="Nama",
-        aggfunc="count",
-        fill_value=0
-    ).rename_axis(None, axis=1).reset_index()
-    pivot_ddc = filtered_ddc.pivot_table(
-        index="Departemen",
-        columns="BU",
-        values="Nama",
-        aggfunc="count",
-        fill_value=0
-    ).rename_axis(None, axis=1).reset_index()
-    bu_counts_ddc = (
-        filtered_ddc["BU"]
-        .value_counts()
-        .reindex(possible_bus, fill_value=0)
-        .reset_index()
-    )
-    bu_counts_ddc.columns = ["BU", "Total"]
-    
     def generate_refresh_html(week_filter, pivot_vio, 
                               bu_counts_vio, 
                               pivot_dfVio,
@@ -1530,69 +1675,10 @@ def app():
         html += "</div>" 
 
         return html
-    
-    #SIMPER
-    ss_simper = "7. DATA SIMPER ALL BU 2026"
-    sheet_simper= client.open(ss_simper)
-    ws_simper = sheet_simper.worksheet("2026")
-    values_simper = ws_simper.get("A:J")
-    df_simper = pd.DataFrame(values_simper[1:], columns=values_simper[0])
-    filtered_simper = df_simper[df_simper["Week 2026"].isin(week_filter)]
-    #full
-    filtered_full=filtered_simper[filtered_simper["Status SIMPER"] == "F"]
-    full=df_simper[df_simper["Status SIMPER"] == "F"]
-    pivot_fullSIMPER= full.pivot_table(
-        index="Perusahaan",
-        columns="BU",
-        values="Nama",
-        aggfunc="count",
-        fill_value=0
-    ).rename_axis(None, axis=1).reset_index()
-    pivot_full = filtered_full.pivot_table(
-        index="Perusahaan",
-        columns="BU",
-        values="Nama",
-        aggfunc="count",
-        fill_value=0
-    ).rename_axis(None, axis=1).reset_index()
-
-    #probation
-    filtered_prob=filtered_simper[filtered_simper["Status SIMPER"] == "P"]
-    probation=df_simper[df_simper["Status SIMPER"] == "P"]
-    pivot_probSIMPER= probation.pivot_table(
-        index="Perusahaan",
-        columns="BU",
-        values="Nama",
-        aggfunc="count",
-        fill_value=0
-    ).rename_axis(None, axis=1).reset_index()
-    pivot_prob = filtered_prob.pivot_table(
-        index="Perusahaan",
-        columns="BU",
-        values="Nama",
-        aggfunc="count",
-        fill_value=0
-    ).rename_axis(None, axis=1).reset_index()
-
-    #sementara
-    filtered_sememntara=filtered_simper[filtered_simper["Status SIMPER"] == "T"]
-    sementara=df_simper[df_simper["Status SIMPER"] == "T"]
-    pivot_semSIMPER= sementara.pivot_table(
-        index="Perusahaan",
-        columns="BU",
-        values="Nama",
-        aggfunc="count",
-        fill_value=0
-    ).rename_axis(None, axis=1).reset_index()
-    pivot_sementara = filtered_sememntara.pivot_table(
-        index="Perusahaan",
-        columns="BU",
-        values="Nama",
-        aggfunc="count",
-        fill_value=0
-    ).rename_axis(None, axis=1).reset_index()
-
-    def generate_simper_html(week_filter,filtered_simper, pivot_full, pivot_prob, pivot_sementara,pivot_fullSIMPER, pivot_probSIMPER, pivot_semSIMPER):
+    def generate_simper_html(week_filter,filtered_simper, 
+                             pivot_full, pivot_prob, pivot_sementara,
+                             pivot_fullSIMPER, pivot_probSIMPER, 
+                             pivot_semSIMPER):
         import requests
         import base64
         import pandas as pd
@@ -1736,78 +1822,11 @@ def app():
         html += "</div>" 
 
         return html
-
-    #TES PRAKTIK
-    
-    ss_praktik = "TES PRAKTIK ALL BU 2026"
-    sheet_praktik= client.open(ss_praktik)
-    ws_praktik = sheet_praktik.worksheet("2026")
-    values_praktik = ws_praktik.get("A:Q")
-    df_praktik = pd.DataFrame(values_praktik[1:], columns=values_praktik[0])
-    filtered_praktik = df_praktik[df_praktik["Week"].isin(week_filter)]
-
-    praktik_dokumentasi = dokumentasi[
-        (dokumentasi["Week"].isin(week_filter)) &
-        (dokumentasi["Kegiatan"] == "Tes Praktik") &(dokumentasi["Year"]=="2026")
-    ]
-
-    #kandidat
-    filtered_kandidat=filtered_praktik[filtered_praktik["Kategori"] == "TES KANDIDAT"]
-    kandidat=df_praktik[df_praktik["Kategori"] == "TES KANDIDAT"]
-    pivot_kandidat2026= kandidat.pivot_table(
-        index="Perusahaan",
-        columns="BU",
-        values="Nama",
-        aggfunc="count",
-        fill_value=0
-    ).rename_axis(None, axis=1).reset_index()
-    pivot_kandidat = filtered_kandidat.pivot_table(
-        index="Perusahaan",
-        columns="BU",
-        values="Nama",
-        aggfunc="count",
-        fill_value=0
-    ).rename_axis(None, axis=1).reset_index()
-
-    #praktik
-    filtered_tespraktik=filtered_praktik[filtered_praktik["Kategori"] == "TES PRAKTIK"]
-    praktik=df_praktik[df_praktik["Kategori"] == "TES PRAKTIK"]
-    pivot_praktik2026= praktik.pivot_table(
-        index="Perusahaan",
-        columns="BU",
-        values="Nama",
-        aggfunc="count",
-        fill_value=0
-    ).rename_axis(None, axis=1).reset_index()
-    pivot_praktik= filtered_tespraktik.pivot_table(
-        index="Perusahaan",
-        columns="BU",
-        values="Nama",
-        aggfunc="count",
-        fill_value=0
-    ).rename_axis(None, axis=1).reset_index()
-
-    #penambahan
-    filtered_penambahan=filtered_praktik[filtered_praktik["Kategori"] == "Penambahan Versatility"]
-    penambahan=df_praktik[df_praktik["Kategori"] == "Penambahan Versatility"]
-    pivot_penambahan2026= penambahan.pivot_table(
-        index="Perusahaan",
-        columns="BU",
-        values="Nama",
-        aggfunc="count",
-        fill_value=0
-    ).rename_axis(None, axis=1).reset_index()
-    pivot_penambahan = filtered_penambahan.pivot_table(
-        index="Perusahaan",
-        columns="BU",
-        values="Nama",
-        aggfunc="count",
-        fill_value=0
-    ).rename_axis(None, axis=1).reset_index()
-
-    def generate_praktik_html(week_filter, filtered_praktik, pivot_kandidat, pivot_kandidat2026,
+    def generate_praktik_html(week_filter, filtered_praktik, 
+                              pivot_kandidat, pivot_kandidat2026,
                               pivot_praktik, pivot_praktik2026,
-                              pivot_penambahan, pivot_penambahan2026, praktik_dokumentasi):
+                              pivot_penambahan, pivot_penambahan2026, 
+                              praktik_dokumentasi):
         import requests
         import base64
         import pandas as pd
@@ -1987,35 +2006,6 @@ def app():
         html += "</div>" 
 
         return html
-
-    #TRAINING
-    spreadsheetTraining = "TRAINING 2026"
-    sheettraining = client.open(spreadsheetTraining)
-    ws_training = sheettraining.worksheet("Training")
-    values_training = ws_training.get("E:Q")
-    df_training = pd.DataFrame(values_training[1:], columns=values_training[0])
-    filtered_training = df_training[df_training["Week"].isin(week_filter)]
-    training_dokumentasi = dokumentasi[
-        (dokumentasi["Week"].isin(week_filter)) &
-        (dokumentasi["Kegiatan"] == "Training") &
-        (dokumentasi["Year"]=="2026")
-    ]
-    bu_counts_training = (
-        filtered_training["BU"]
-        .value_counts()
-        .reindex(possible_bus, fill_value=0)
-        .reset_index()
-    )
-    bu_counts_training.columns = ["BU", "Total"]
-
-    pivot_training2026 = df_training.pivot_table(
-        index="Perusahaan",
-        columns="BU",
-        values="Nama",
-        aggfunc="count",
-        fill_value=0
-    ).rename_axis(None, axis=1).reset_index()
-
     def generate_training_html(week_filter, filtered_training, pivot_training2026, training_dokumentasi):
         import requests
         import base64
@@ -2126,40 +2116,6 @@ def app():
         return html
     
         #Complience Rate
-    sscompliencerate = "TRAINING 2026"
-    sheetCR = client.open(sscompliencerate)
-    worksheetCR = sheetCR.worksheet("Training Complience Rate")
-    valuesCR = worksheetCR.get("E:R")
-    dfCR = pd.DataFrame(valuesCR[1:],columns=valuesCR[0])
-    filtered_CR = dfCR[dfCR["Week"].isin(week_filter)]
-    CR_dokumentasi = dokumentasi[
-        (dokumentasi["Week"].isin(week_filter)) &
-        (dokumentasi["Kegiatan"] == "Complience Rate") &
-        (dokumentasi["Year"]=="2026")
-    ]
-    pivot_CR = filtered_CR.pivot_table(
-        index="Departement",
-        columns="Judul Training",
-        values="Nama",
-        aggfunc="count",
-        fill_value=0
-    ).rename_axis(None, axis=1).reset_index()
-    bu_counts_CR = (
-        filtered_CR["BU"]
-        .value_counts()
-        .reindex(possible_bus, fill_value=0)
-        .reset_index()
-    )
-    bu_counts_CR.columns = ["BU", "Total"]
-
-    pivot_CR2026 = dfCR.pivot_table(
-        index="Departement",
-        columns="BU",
-        values="Nama",
-        aggfunc="count",
-        fill_value=0
-    ).rename_axis(None, axis=1).reset_index()
-
     def generate_CR_html(week_filter, filtered_CR, pivot_CR, pivot_CR2026, CR_dokumentasi):
         import requests
         import base64
@@ -2262,15 +2218,6 @@ def app():
         html += "</div>"
 
         return html
-
-    #P5M
-    ssp5m = "6. BRIEFING P5M 2026"
-    sheetp5m = client.open(ssp5m)
-    worksheetp5m = sheetp5m.worksheet("2026")
-    valuesp5m = worksheetp5m.get("E:V")
-    dfp5m = pd.DataFrame(valuesp5m[1:],columns=valuesp5m[0])
-    filtered_p5m = dfp5m[dfp5m["Week"].isin(week_filter)]
-
     def generate_p5m_html(week_filter, filtered_p5m):
         import requests
         import base64
@@ -2338,13 +2285,6 @@ def app():
                 """
         html += "</div>"
         return html
-    
-    #Lainnya
-    lainnya_dokumentasi = dokumentasi[
-        (dokumentasi["Week"].isin(week_filter))&
-        (dokumentasi["Kegiatan"]=="Lainnya") &
-        (dokumentasi["Year"]=="2026")
-        ]
     def generate_lainnya_html(week_filter, lainnya_dokumentasi):
         import requests
         import base64
@@ -2400,15 +2340,6 @@ def app():
         html += "</div>"
 
         return html
-
-    #Issues
-    ssissues = "ASSET MANAGEMENT 2026"
-    sheetissues = client.open(ssissues)
-    worksheetissues = sheetissues.worksheet("Feedback Issues")
-    valuesissuses = worksheetissues.get("A:I")
-    dfissues = pd.DataFrame(valuesissuses[1:],columns=valuesissuses[0])
-    filtered_issues= dfissues[dfissues["Week"].isin(week_filter)]
-
     def generate_issues_html(dfissues, filtered_issues, week_filter):
         df_open = dfissues[
             (dfissues["Status"] == "Open") &
@@ -2474,9 +2405,8 @@ def app():
             ].to_html(index=False)
         return html
 
-    
- 
-    
+
+    #html
     overview_html = generate_overview_html(
         df_manpower,
         sum_kegiatan,
@@ -2484,7 +2414,8 @@ def app():
         week_filter)
 
     induksi_html = generate_induksi_html(
-        week_filter, filtered_induksi, pivot_induksi2026,
+        week_filter, filtered_induksi, 
+        pivot_induksi, pivot_induksi2026,
         induksi_dokumentasi
     )
 
@@ -2498,7 +2429,6 @@ def app():
         filtered_temuan, 
         inspeksi_dokumentasi
     )
-
     recom_html = generate_recom_html(
         week_filter, filtered_recom,
         filtered_commissioning,
@@ -2516,8 +2446,7 @@ def app():
         bu_counts_recom, 
         bu_counts_com,
         filtered_temuan_recom, 
-        recom_dokumentasi
-    )
+        recom_dokumentasi)
 
     refresh_html = generate_refresh_html(
         week_filter, pivot_vio, 
@@ -2532,34 +2461,35 @@ def app():
         pivot_fullddc,
         pivot_ddc,
         bu_counts_ddc,
-        refresh_dokumentasi
-    )
+        refresh_dokumentasi)
 
     simper_html = generate_simper_html(
-        week_filter, filtered_simper, pivot_full, pivot_prob, pivot_sementara,
-        pivot_fullSIMPER, pivot_probSIMPER, pivot_semSIMPER
-    )
-
+        week_filter,filtered_simper, 
+        pivot_full, pivot_prob, pivot_sementara,
+        pivot_fullSIMPER, pivot_probSIMPER, 
+        pivot_semSIMPER)
+    
     praktik_html = generate_praktik_html(
-        week_filter, filtered_praktik, pivot_kandidat, pivot_kandidat2026,
+        week_filter, filtered_praktik, 
+        pivot_kandidat, pivot_kandidat2026,
         pivot_praktik, pivot_praktik2026,
-        pivot_penambahan, pivot_penambahan2026, praktik_dokumentasi
-    )
+        pivot_penambahan, pivot_penambahan2026, 
+        praktik_dokumentasi)
 
-    training_html = generate_training_html(week_filter, filtered_training,
-                                           pivot_training2026, 
-                                           training_dokumentasi)
+    training_html = generate_training_html(
+        week_filter, filtered_training, 
+        pivot_training2026, training_dokumentasi)
     
     CR_html = generate_CR_html(
-        week_filter, filtered_CR, pivot_CR, pivot_CR2026, CR_dokumentasi    
-    )
-
+        week_filter, filtered_CR, 
+        pivot_CR, pivot_CR2026, CR_dokumentasi)
+    
     p5m_html = generate_p5m_html(
         week_filter, filtered_p5m    
     )
 
-    lainnya_html=generate_lainnya_html(week_filter, lainnya_dokumentasi)
-
+    lainnya_html=generate_lainnya_html(
+        week_filter, lainnya_dokumentasi)
 
     issues_html = generate_issues_html(
         dfissues, filtered_issues, week_filter   
@@ -2570,9 +2500,9 @@ def app():
         + induksi_html
         + inspeksi_html
         + recom_html
-        + praktik_html
+        + refresh_html
         + simper_html
-        + refresh_html        
+        + praktik_html
         + training_html
         + CR_html
         + p5m_html
@@ -2588,4 +2518,3 @@ def app():
     )
 
     st.components.v1.html(final_html, height=600, scrolling=True)
-   
