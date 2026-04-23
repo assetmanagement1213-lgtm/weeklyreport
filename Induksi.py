@@ -231,7 +231,8 @@ def app():
                 xaxis_title="Business Unit",
                 yaxis_title="Jumlah",
                 showlegend=False,
-                bargap=0.3,
+                bargap=0.4,
+                bargroupgap=0.1,
                 plot_bgcolor="white",
                 paper_bgcolor="white",
                 height=420
