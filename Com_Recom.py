@@ -86,7 +86,7 @@ def app():
     filteredrecom = df_recom[df_recom["Week"].isin(week_filter)]
     recom_dokumentasi = dokumentasi[
         (dokumentasi["Week"].isin(week_filter)) &
-        (dokumentasi["Kegiatan"].isin(["Recommissioning", "Commissining"])) & (dokumentasi["Year"]=="2026")
+        (dokumentasi["Kegiatan"].isin(["Recommissioning", "Commissioning"])) & (dokumentasi["Year"]=="2026")
     ]
     l, m = st.columns(2)
 
