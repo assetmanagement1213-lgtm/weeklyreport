@@ -78,8 +78,8 @@ if "page" not in st.session_state:
 
 
 st.set_page_config(
-    page_title="Weekly Report Asset Management 2026",
-    page_icon="👷‍♂️",
+    page_title="Asset-WRAP",
+    page_icon="📆",
     layout="wide"
 )
 
@@ -263,8 +263,9 @@ st.markdown(f"""
         <img src="data:image/png;base64,{logo_base64}">
     </div>
     <div class="header-text">
-        <h1>Weekly Report</h1>
-        <h2>Asset Management 2026</h2>
+        <h1>Asset-WRAP</h1>
+        <h2>Asset Weekly Report Automation Report</h2>
+        <h3>Asset Management 2026</h3>
     </div>
 </div>
 """, unsafe_allow_html=True)
