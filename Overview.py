@@ -267,7 +267,7 @@ st.markdown(f"""
         <img src="data:image/png;base64,{logo_base64}">
     </div>
     <div class="header-text">
-        <h1>Asset-WRAP</h1>
+        <h1>📆 Asset-WRAP</h1>
         <h3>Asset Weekly Report Automation Report</h3>
         <h2>Asset Management 2026</h2>
     </div>
