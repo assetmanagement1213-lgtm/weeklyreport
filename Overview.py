@@ -246,6 +246,10 @@ st.markdown("""
         font-weight: 500;
         color: #374151;
     }
+    .header-text h3 {
+        margin-top: -25px;
+        color: #374151;
+    }
 
     /* logo bulat */
     .header-logo img {
