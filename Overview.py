@@ -268,7 +268,7 @@ st.markdown(f"""
     </div>
     <div class="header-text">
         <h1>📆 Asset-WRAP</h1>
-        <h3>Asset Weekly Report Automation Report</h3>
+        <h3>Asset Weekly Report Automation Platform</h3>
         <h2>Asset Management 2026</h2>
     </div>
 </div>
