@@ -21,7 +21,7 @@ def app():
                 }   
             </style>
             <div class="header-subactivity">
-                <h1>Issues</h1>
+                <h1>Feedback</h1>
             </div>""",unsafe_allow_html=True)
     SCOPES = [
         "https://www.googleapis.com/auth/spreadsheets",
@@ -124,7 +124,7 @@ def app():
     with x1:
         st.markdown(f"""
             <div class="metric-card">
-                <h4>Closing Rate All Issues</h4>
+                <h4>Closing Rate All Feedback</h4>
                 <div class="value">{closing_rate:.1f}%</div>
             </div>
         """, unsafe_allow_html=True)    
@@ -159,7 +159,7 @@ def app():
                 }}
             </style>
             <div class="judul">
-                <h2>Issues {judul_week}</h2>
+                <h2>Feedback {judul_week}</h2>
             </div>
             """,
             unsafe_allow_html=True)
@@ -212,7 +212,7 @@ def app():
 
                     st.success("Updated ✅")
     st.divider()
-    st.markdown("## Open Issues from Previous Weeks")
+    st.markdown("## Open Feedback from Previous Weeks")
     df_open = df_open.reset_index(drop=True)  
     if df_open.empty:
         st.success("Tidak ada issues open dari week sebelumnya ✅")
