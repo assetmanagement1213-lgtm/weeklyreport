@@ -138,7 +138,7 @@ with st.sidebar:
         options=[
             "Overview","Induksi","Training","Complience Rate",
             "Com/Re-com","Inspeksi & Observasi",
-            "SIMPER","Tes Praktik","Refresh","Briefing P5M","Aktivitas Lain", "Issues", "Download Report"
+            "SIMPER","Tes Praktik","Refresh","Briefing P5M","Aktivitas Lain", "Feedback", "Download Report"
         ],
         icons=[
         "speedometer2",      # Overview
@@ -611,7 +611,7 @@ elif selected == "Briefing P5M":
 elif selected == "Aktivitas Lain":
     Lainnya.app()
 
-elif selected == "Issues":
+elif selected == "Feedback":
     Issues.app()
 
 elif selected == "Download Report":
