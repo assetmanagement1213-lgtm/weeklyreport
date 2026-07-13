@@ -34,7 +34,7 @@ def show_login():
             margin-bottom: 30px;
             color: #134f5c;
         }
-        [class="stVerticalBlock st-emotion-cache-wfksaw e1rw0b1u3"] {
+        [class="stVerticalBlock st-key-form st-emotion-cache-1rf3gxw e1rw0b1u3"] {
             background-color: white;
             box-shadow: 0 3px 8px rgba(0,0,0,0.08);
 
