@@ -39,7 +39,7 @@ def show_login():
             box-shadow: 0 3px 8px rgba(0,0,0,0.08);
 
         }
-        [class="stVerticalBlock st-emotion-cache-wfksaw e1rw0b1u3"] {
+        [class="stColumn st-emotion-cache-kk39sw e1rw0b1u2"] {
             background-color: white;
             box-shadow: 0 3px 8px rgba(0,0,0,0.08);
 
