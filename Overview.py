@@ -39,11 +39,7 @@ def show_login():
             box-shadow: 0 3px 8px rgba(0,0,0,0.08);
 
         }
-        [class="stColumn st-emotion-cache-kk39sw e1rw0b1u2"] {
-            background-color: white;
-            box-shadow: 0 3px 8px rgba(0,0,0,0.08);
-
-        }
+        
         </style>
     """, unsafe_allow_html=True)
     main_container=st.container(
@@ -263,6 +259,11 @@ st.markdown("""
         border-radius: 50%;
         object-fit: cover;
         box-shadow: 0 6px 14px rgba(0,0,0,0.15);
+    }
+    [class="stColumn st-emotion-cache-kk39sw e1rw0b1u2"] {
+            background-color: white;
+            box-shadow: 0 3px 8px rgba(0,0,0,0.08);
+
     }
     </style>
     """, unsafe_allow_html=True)
