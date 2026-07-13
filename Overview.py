@@ -265,6 +265,11 @@ st.markdown("""
             box-shadow: 0 3px 8px rgba(0,0,0,0.08);
 
     }
+    [class="stColumn st-emotion-cache-or7mmo e1rw0b1u2"] {
+            background-color: white;
+            box-shadow: 0 3px 8px rgba(0,0,0,0.08);
+
+    }
     </style>
     """, unsafe_allow_html=True)
 st.markdown(f"""
