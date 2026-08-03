@@ -146,7 +146,7 @@ def app():
     time.sleep(2)
     dfRecom = load_sheet(client, "COMMISSIONING & RECOMMISSIONING ALL BU 2026", "2026", "D:U")
     time.sleep(2)
-    df_temuan_recom = load_sheet(client,"COMMISSIONING & RECOMMISSIONING ALL BU 2026", "Olah Temuan", "A:H" )
+    df_temuan_recom = load_sheet(client,"COMMISSIONING & RECOMMISSIONING ALL BU 2026", "Olah Temuan", "A:J" )
     time.sleep(2)
     dfViolation = load_sheet(client, "REFRESH VIOLATION 2026", "2026", "D:U")
     time.sleep(2)
