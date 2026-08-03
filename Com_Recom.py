@@ -45,7 +45,7 @@ def app():
     df_recom = pd.DataFrame(values_recom[1:], columns=values_recom[0])
 
     ws_temuan=sheet.worksheet("Olah Temuan")
-    values_temuan=ws_temuan.get("A:H")
+    values_temuan=ws_temuan.get("A:J")
     df_temuan = pd.DataFrame(values_temuan[1:],columns=values_temuan[0])
 
     ws_dok = sheet_dok.worksheet("Dokumentasi")
