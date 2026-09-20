@@ -34,7 +34,7 @@ def show_login():
             margin-bottom: 30px;
             color: #134f5c;
         }
-        [class="stVerticalBlock st-key-form st-emotion-cache-1rf3gxw elzidro3"] {
+        [class="stVerticalBlock st-key-form st-emotion-cache-12s4lnh ep3ma5o3"] {
             background-color: white;
             box-shadow: 0 3px 8px rgba(0,0,0,0.08);
 
@@ -260,12 +260,12 @@ st.markdown("""
         object-fit: cover;
         box-shadow: 0 6px 14px rgba(0,0,0,0.15);
     }
-    [class="stColumn st-emotion-cache-xer7gs elzidro2"] {
+    [class="stColumn st-emotion-cache-rip8fr ep3ma5o2"] {
             background-color: white;
             box-shadow: 0 3px 8px rgba(0,0,0,0.08);
 
     }
-    [class="stColumn st-emotion-cache-u9u8a2 elzidro2"] {
+    [class="stColumn st-emotion-cache-brggwm ep3ma5o2"] {
             background-color: white;
             box-shadow: 0 3px 8px rgba(0,0,0,0.08);
 
