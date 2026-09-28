@@ -84,6 +84,7 @@ def app():
         return f"{week_sorted[0]} – {week_sorted[-1]}"
 
     filteredrecom = df_recom[df_recom["Week"].isin(week_filter)]
+    filtered_temuan = df_temuan[df_temuan["Week"].isin(week_filter)]
     recom_dokumentasi = dokumentasi[
         (dokumentasi["Week"].isin(week_filter)) &
         (dokumentasi["Kegiatan"].isin(["Recommissioning", "Commissioning"])) & (dokumentasi["Year"]=="2026")
@@ -587,7 +588,59 @@ def app():
             }}
         </style>
         <div class="subhead-grafik">
-            <h2>TOP 10 Temuan Commissioning & Recommissioning</h2>
+            <h2>TOP 10 Temuan Commissioning & Recommissioning {judul_week}</h2>
+        </div>
+        """,
+        unsafe_allow_html=True
+        )
+        top_temuan_week = (
+                filtered_temuan
+                .groupby("Klasifikasi Temuan", as_index=False)
+                .size()
+                .rename(columns={"size": "Jumlah"})
+                .sort_values("Jumlah", ascending=False)
+                .head(10)  
+            )
+        fig_temuan_week= px.bar(
+                top_temuan_week,
+                x="Jumlah",
+                y="Klasifikasi Temuan",
+                orientation="h",
+                text="Jumlah",
+            )
+
+        fig_temuan_week.update_traces(textposition="outside")
+        fig_temuan_week.update_layout(
+            yaxis=dict(autorange="reversed"),
+            font=dict(
+                color="black",
+                size=14
+            ),
+            plot_bgcolor="white",
+            paper_bgcolor="white"
+        )
+        fig_temuan_week.update_yaxes(
+            tickfont=dict(
+                size=16,
+                color="black"
+            )
+        )
+
+        st.plotly_chart(fig_temuan_week, use_container_width=True,key="bar_temuan_weekly")
+    with st.container(border=True):
+        st.markdown(
+        f"""
+        <style>
+            .subhead-grafik h2 {{
+                margin: 0;
+                font-size: 30px;
+                font-weight: 600;
+                color: black;
+                text-align: center;
+            }}
+        </style>
+        <div class="subhead-grafik">
+            <h2>TOP 10 Temuan Commissioning & Recommissioning 2026</h2>
         </div>
         """,
         unsafe_allow_html=True
