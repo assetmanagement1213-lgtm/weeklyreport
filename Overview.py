@@ -260,12 +260,12 @@ st.markdown("""
         object-fit: cover;
         box-shadow: 0 6px 14px rgba(0,0,0,0.15);
     }
-    [class="stColumn st-emotion-cache-rip8fr ep3ma5o2"] {
+    [class="stColumn st-emotion-cache-1bortze e6x7pi2"] {
             background-color: white;
             box-shadow: 0 3px 8px rgba(0,0,0,0.08);
 
     }
-    [class="stColumn st-emotion-cache-brggwm ep3ma5o2"] {
+    [class="stColumn st-emotion-cache-1oxrrk3 e6x7pi2"] {
             background-color: white;
             box-shadow: 0 3px 8px rgba(0,0,0,0.08);
 
